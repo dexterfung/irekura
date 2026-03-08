@@ -72,8 +72,11 @@ similar flavour profile.
    recommendation, **Then** the app suggests the coffee with the highest richness / bitterness
    score that has stock available, adjusted for expiry urgency.
 3. **Given** a populated inventory and the mood "Smooth & Balanced", **When** the user requests
-   a recommendation, **Then** the app suggests the coffee with mid-range scores across all
-   flavour dimensions, adjusted for expiry urgency.
+   a recommendation, **Then** the app suggests the coffee whose bitterness, sourness, and
+   richness scores are collectively closest to the mid-point (3 on each dimension), ranked by
+   ascending sum of absolute deviations from 3 across all three flavour dimensions
+   (e.g., a coffee rated 3/3/3 scores 0 and ranks highest; one rated 5/1/4 scores 4 and ranks
+   lower), adjusted for expiry urgency per FR-009.
 4. **Given** any mood and an inventory where one batch expires within 7 days, **When** the user
    requests a recommendation, **Then** that batch is recommended ahead of similarly-profiled
    fresher alternatives.
@@ -196,7 +199,10 @@ coffee should be the highest-bitterness option available (expiry not a factor).
   Light & Bright, Strong & Rich, Smooth & Balanced, and Surprise Me.
 - **FR-008**: The recommendation engine MUST only consider batches with at least 1 brew
   remaining.
-- **FR-009**: Batches expiring within 7 days MUST be ranked above otherwise equivalent options.
+- **FR-009**: Batches expiring within 7 days MUST be ranked first within any mood-filtered
+  result set, overriding flavour-profile weighting from the active preference profile.
+  Among batches not within the 7-day threshold, the active preference profile weights govern
+  ranking.
 - **FR-010**: The recommendation algorithm MUST use the weekday preference profile on Monday–
   Friday and the weekend profile on Saturday–Sunday.
 - **FR-011**: The recommendation MUST display the product name, type, brand, flavour ratings,
@@ -256,8 +262,9 @@ coffee should be the highest-bitterness option available (expiry not a factor).
   action (no more than 3 taps from the recommendation screen).
 - **SC-004**: The inventory overview gives clear at-a-glance visibility of which batches expire
   within 30 days without requiring any additional navigation.
-- **SC-005**: The calendar history view loads and displays up to 12 months of consumption
-  entries without visible delay.
+- **SC-005**: The calendar history view navigates to any prior month and loads that month's
+  consumption entries in under 2 seconds, regardless of how far back in history the user
+  navigates.
 - **SC-006**: 100% of functional requirements can be completed without a desktop browser — the
   app is fully usable on a mobile device screen.
 
@@ -276,3 +283,9 @@ coffee should be the highest-bitterness option available (expiry not a factor).
 - The app is a single-user personal utility; there is no account sharing or multi-user access.
 - Authentication is handled externally (user must be signed in); the app does not need to
   manage sign-up or password recovery flows.
+- The "Smooth & Balanced" mood uses sum-of-absolute-deviations from 3 as its scoring formula:
+  score = |bitterness − 3| + |sourness − 3| + |richness − 3|. Lower scores rank higher.
+  This is a deterministic, parameter-free formula requiring no user configuration.
+- The scoring precedence across all moods is: (1) batches expiring within 7 days are elevated
+  above all others regardless of flavour-profile match; (2) among remaining batches, the
+  active preference profile weights govern ranking by mood.
