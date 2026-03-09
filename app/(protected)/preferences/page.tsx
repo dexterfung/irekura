@@ -39,11 +39,23 @@ export default function PreferencesPage() {
 
   return (
     <div className="min-h-full">
-<div className="p-4 max-w-lg mx-auto">
-        <p className="text-sm text-muted-foreground mb-4">
-          Set how much each flavour dimension matters when getting recommendations.
-        </p>
+      <div className="p-4 max-w-lg mx-auto">
 
+        {/* Account */}
+        <div className="mb-6 rounded-lg border border-border p-4 flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-sm font-medium truncate">{session?.user?.name}</p>
+            <p className="text-xs text-muted-foreground truncate">{session?.user?.email}</p>
+          </div>
+          <button
+            onClick={() => { setTheme("system"); void signOut({ callbackUrl: "/auth/signin" }); }}
+            className="shrink-0 rounded-lg border border-border px-3 py-2 text-sm font-medium text-destructive hover:bg-accent transition-colors"
+          >
+            Sign out
+          </button>
+        </div>
+
+        {/* Appearance */}
         <div className="mb-6">
           <p className="text-sm font-medium mb-2">Appearance</p>
           <div className="grid grid-cols-3 gap-2">
@@ -63,18 +75,11 @@ export default function PreferencesPage() {
           </div>
         </div>
 
-        <div className="mb-6 rounded-lg border border-border p-4 flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-sm font-medium truncate">{session?.user?.name}</p>
-            <p className="text-xs text-muted-foreground truncate">{session?.user?.email}</p>
-          </div>
-          <button
-            onClick={() => { setTheme("system"); void signOut({ callbackUrl: "/auth/signin" }); }}
-            className="shrink-0 rounded-lg border border-border px-3 py-2 text-sm font-medium text-destructive hover:bg-accent transition-colors"
-          >
-            Sign out
-          </button>
-        </div>
+        {/* Flavour preferences */}
+        <p className="text-sm font-medium mb-2">Flavour Preferences</p>
+        <p className="text-sm text-muted-foreground mb-4">
+          Set how much each flavour dimension matters when getting recommendations.
+        </p>
 
         {saveStatus && (
           <Toast

@@ -34,7 +34,7 @@ export default async function RootLayout({
         <meta name="theme-color" content="#1a1a1a" />
         <link rel="apple-touch-icon" href="/icons/irekura-icon-512.png" />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <ConvexClientProvider session={session}>
             <ThemeSync />
