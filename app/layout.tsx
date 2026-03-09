@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
+import NextTopLoader from "nextjs-toploader";
 import ConvexClientProvider from "@/components/ConvexClientProvider";
 import ThemeSync from "@/components/ThemeSync";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
@@ -39,6 +40,7 @@ export default async function RootLayout({
           <ConvexClientProvider session={session}>
             <ThemeSync />
             <PWAInstallPrompt />
+            <NextTopLoader color="#a16207" height={3} showSpinner={false} />
             {children}
           </ConvexClientProvider>
         </ThemeProvider>
