@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getDaysUntilExpiry, toISODateString } from "@/lib/utils";
@@ -6,7 +7,7 @@ import type { Doc } from "@/convex/_generated/dataModel";
 interface ProductCardProps {
   product: Doc<"products">;
   batches: Doc<"batches">[];
-  onClick?: () => void;
+  href: string;
 }
 
 const TYPE_LABELS: Record<string, string> = {
@@ -16,7 +17,7 @@ const TYPE_LABELS: Record<string, string> = {
   "instant-powder": "Instant",
 };
 
-export default function ProductCard({ product, batches, onClick }: ProductCardProps) {
+export default function ProductCard({ product, batches, href }: ProductCardProps) {
   const today = toISODateString(new Date());
   const activeBatches = batches.filter((b) => b.brewsRemaining > 0);
   const totalBrews = activeBatches.reduce((sum, b) => sum + b.brewsRemaining, 0);
@@ -37,9 +38,9 @@ export default function ProductCard({ product, batches, onClick }: ProductCardPr
   );
 
   return (
+    <Link href={href} className="block">
     <Card
       className="cursor-pointer hover:shadow-md transition-shadow active:scale-[0.98]"
-      onClick={onClick}
     >
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between gap-2">
@@ -72,5 +73,6 @@ export default function ProductCard({ product, batches, onClick }: ProductCardPr
         )}
       </CardContent>
     </Card>
+    </Link>
   );
 }

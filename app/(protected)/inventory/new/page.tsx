@@ -67,6 +67,7 @@ export default function NewProductPage() {
               Step 1 of 2: Tell us about this coffee
             </p>
             <ProductForm
+              defaultValues={productData ?? undefined}
               onSubmit={handleProductSubmit}
               submitLabel="Next: Add Batch"
             />

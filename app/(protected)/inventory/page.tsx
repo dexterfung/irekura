@@ -2,7 +2,7 @@
 
 import { Suspense } from "react";
 import { useQuery } from "convex/react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Plus } from "lucide-react";
 import { api } from "@/convex/_generated/api";
 import ProductCard from "@/components/inventory/ProductCard";
@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import type { Doc } from "@/convex/_generated/dataModel";
 
 function InventoryList() {
-  const router = useRouter();
   const products = useQuery(api.products.list);
   const allBatches = useQuery(api.batches.listActive);
 
@@ -33,9 +32,11 @@ function InventoryList() {
         <p className="text-muted-foreground text-sm mb-6">
           Add your first coffee product to get started
         </p>
-        <Button onClick={() => router.push("/inventory/new")}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Coffee
+        <Button asChild>
+          <Link href="/inventory/new">
+            <Plus className="mr-2 h-4 w-4" />
+            Add Coffee
+          </Link>
         </Button>
       </div>
     );
@@ -48,7 +49,7 @@ function InventoryList() {
           key={product._id}
           product={product}
           batches={batchesByProduct[product._id] ?? []}
-          onClick={() => router.push(`/inventory/${product._id}`)}
+          href={`/inventory/${product._id}`}
         />
       ))}
     </div>
@@ -70,21 +71,21 @@ function InventorySkeleton() {
 }
 
 export default function InventoryPage() {
-  const router = useRouter();
-
   return (
     <div className="min-h-full">
-<Suspense fallback={<InventorySkeleton />}>
+      <Suspense fallback={<InventorySkeleton />}>
         <InventoryList />
       </Suspense>
 
       <Button
+        asChild
         size="icon"
         className="fixed bottom-24 right-4 h-14 w-14 rounded-full shadow-lg"
-        onClick={() => router.push("/inventory/new")}
         aria-label="Add new coffee"
       >
-        <Plus className="h-6 w-6" />
+        <Link href="/inventory/new">
+          <Plus className="h-6 w-6" />
+        </Link>
       </Button>
     </div>
   );

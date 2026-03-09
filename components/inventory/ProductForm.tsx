@@ -31,7 +31,7 @@ interface ProductFormValues {
 }
 
 interface ProductFormProps {
-  defaultValues?: Partial<Doc<"products">>;
+  defaultValues?: Partial<ProductFormValues>;
   onSubmit: (values: ProductFormValues) => void;
   submitLabel?: string;
   isLoading?: boolean;
