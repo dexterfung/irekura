@@ -119,11 +119,7 @@ export default function RecommendPage() {
 
   return (
     <div className="min-h-full">
-      <header className="sticky top-0 z-40 border-b bg-background px-4 py-3">
-        <h1 className="text-xl font-bold">What&apos;s Your Mood?</h1>
-      </header>
-
-      <div className="p-4 max-w-lg mx-auto space-y-6">
+<div className="p-4 max-w-lg mx-auto space-y-6">
         <MoodSelector
           selected={selectedMood}
           onSelect={(mood) => {

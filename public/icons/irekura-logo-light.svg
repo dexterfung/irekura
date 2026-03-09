@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 148 60" width="148" height="60">
+  <defs>
+    <clipPath id="beanClip">
+      <ellipse cx="16" cy="30" rx="12" ry="9" transform="rotate(-25 16 30)"/>
+    </clipPath>
+  </defs>
+
+  <!-- Bean: flat, single solid fill, slightly tilted -->
+  <ellipse cx="16" cy="30" rx="12" ry="9" fill="#7B4A2D" transform="rotate(-25 16 30)"/>
+
+  <!-- Crease: two subtle arcs forming an S-curve through the bean -->
+  <path
+    d="M12.5,23 C14,27 18,33 19.5,37"
+    fill="none"
+    stroke="#FAF6F2"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    clip-path="url(#beanClip)"
+  />
+
+  <!-- Wordmark -->
+  <text
+    x="36"
+    y="40"
+    font-family="'Helvetica Neue', 'Arial', sans-serif"
+    font-size="34"
+    font-weight="500"
+    letter-spacing="-0.5"
+    fill="#111111"
+  >irekura</text>
+</svg>

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <clipPath id="beanClip">
+      <ellipse cx="256" cy="256" rx="148" ry="112" transform="rotate(-25 256 256)"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background: warm off-white, like a latte -->
+  <rect width="512" height="512" rx="115" ry="115" fill="#F5EFE8"/>
+
+  <!-- Bean: flat, one colour -->
+  <ellipse cx="256" cy="256" rx="148" ry="112" fill="#7B4A2D" transform="rotate(-25 256 256)"/>
+
+  <!-- Crease: clean S-curve in near-white -->
+  <path
+    d="M198,182 C220,222 292,290 314,330"
+    fill="none"
+    stroke="#F5EFE8"
+    stroke-width="16"
+    stroke-linecap="round"
+    clip-path="url(#beanClip)"
+  />
+</svg>

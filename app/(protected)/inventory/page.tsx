@@ -74,11 +74,7 @@ export default function InventoryPage() {
 
   return (
     <div className="min-h-full">
-      <header className="sticky top-0 z-40 border-b bg-background px-4 py-3">
-        <h1 className="text-xl font-bold">My Coffee</h1>
-      </header>
-
-      <Suspense fallback={<InventorySkeleton />}>
+<Suspense fallback={<InventorySkeleton />}>
         <InventoryList />
       </Suspense>
 

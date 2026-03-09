@@ -72,11 +72,7 @@ export default function HistoryPage() {
 
   return (
     <div className="min-h-full">
-      <header className="sticky top-0 z-40 border-b bg-background px-4 py-3">
-        <h1 className="text-xl font-bold">History</h1>
-      </header>
-
-      <div className="p-4 max-w-lg mx-auto">
+<div className="p-4 max-w-lg mx-auto">
         {/* Responsive calendar */}
         <div className="sm:hidden">
           <WeeklyStrip

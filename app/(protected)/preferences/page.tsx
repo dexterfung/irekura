@@ -6,6 +6,7 @@ import { signOut, useSession } from "next-auth/react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Toast } from "@/components/ui/toast";
 import ProfileForm from "@/components/preferences/ProfileForm";
 import type { FlavorProfile } from "@/lib/recommendations/engine";
 
@@ -38,11 +39,7 @@ export default function PreferencesPage() {
 
   return (
     <div className="min-h-full">
-      <header className="sticky top-0 z-40 border-b bg-background px-4 py-3">
-        <h1 className="text-xl font-bold">Preferences</h1>
-      </header>
-
-      <div className="p-4 max-w-lg mx-auto">
+<div className="p-4 max-w-lg mx-auto">
         <p className="text-sm text-muted-foreground mb-4">
           Set how much each flavour dimension matters when getting recommendations.
         </p>
@@ -80,9 +77,11 @@ export default function PreferencesPage() {
         </div>
 
         {saveStatus && (
-          <p className={`text-sm mb-3 ${saveStatus === "success" ? "text-green-600" : "text-destructive"}`}>
-            {saveStatus === "success" ? "Preferences saved." : "Failed to save. Please try again."}
-          </p>
+          <Toast
+            message={saveStatus === "success" ? "Preferences saved." : "Failed to save. Please try again."}
+            type={saveStatus}
+            onDismiss={() => setSaveStatus(null)}
+          />
         )}
 
         {isLoading ? (
