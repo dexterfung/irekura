@@ -13,6 +13,7 @@ import type * as consumption from "../consumption.js";
 import type * as http from "../http.js";
 import type * as preferences from "../preferences.js";
 import type * as products from "../products.js";
+import type * as settings from "../settings.js";
 
 import type {
   ApiFromModules,
@@ -26,6 +27,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   preferences: typeof preferences;
   products: typeof products;
+  settings: typeof settings;
 }>;
 
 /**

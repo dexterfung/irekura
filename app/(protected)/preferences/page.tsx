@@ -11,8 +11,10 @@ import type { FlavorProfile } from "@/lib/recommendations/engine";
 
 export default function PreferencesPage() {
   const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<"success" | "error" | null>(null);
   const { data: session } = useSession();
   const { theme, setTheme } = useTheme();
+  const saveTheme = useMutation(api.settings.setTheme);
 
   const weekdayProfile = useQuery(api.preferences.get, { type: "weekday" });
   const weekendProfile = useQuery(api.preferences.get, { type: "weekend" });
@@ -20,10 +22,15 @@ export default function PreferencesPage() {
 
   async function handleSave(type: "weekday" | "weekend", profile: FlavorProfile) {
     setIsSaving(true);
+    setSaveStatus(null);
     try {
       await upsertProfile({ type, ...profile });
+      setSaveStatus("success");
+    } catch {
+      setSaveStatus("error");
     } finally {
       setIsSaving(false);
+      setTimeout(() => setSaveStatus(null), 3000);
     }
   }
 
@@ -46,7 +53,7 @@ export default function PreferencesPage() {
             {(["system", "light", "dark"] as const).map((option) => (
               <button
                 key={option}
-                onClick={() => setTheme(option)}
+                onClick={() => { setTheme(option); void saveTheme({ theme: option }); }}
                 className={`rounded-lg border px-3 py-2 text-sm font-medium capitalize transition-colors ${
                   theme === option
                     ? "border-foreground bg-foreground text-background"
@@ -65,12 +72,18 @@ export default function PreferencesPage() {
             <p className="text-xs text-muted-foreground truncate">{session?.user?.email}</p>
           </div>
           <button
-            onClick={() => signOut({ callbackUrl: "/auth/signin" })}
+            onClick={() => { setTheme("system"); void signOut({ callbackUrl: "/auth/signin" }); }}
             className="shrink-0 rounded-lg border border-border px-3 py-2 text-sm font-medium text-destructive hover:bg-accent transition-colors"
           >
             Sign out
           </button>
         </div>
+
+        {saveStatus && (
+          <p className={`text-sm mb-3 ${saveStatus === "success" ? "text-green-600" : "text-destructive"}`}>
+            {saveStatus === "success" ? "Preferences saved." : "Failed to save. Please try again."}
+          </p>
+        )}
 
         {isLoading ? (
           <div className="space-y-4 animate-pulse">

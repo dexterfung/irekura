@@ -1,6 +1,12 @@
 import { signIn } from "@/lib/auth";
 
-export default function SignInPage() {
+export default async function SignInPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error } = await searchParams;
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm space-y-8">
@@ -10,6 +16,12 @@ export default function SignInPage() {
             Your personal coffee inventory manager
           </p>
         </div>
+
+        {error && (
+          <p className="text-sm text-destructive text-center">
+            Sign in failed. Please try again.
+          </p>
+        )}
 
         <div className="space-y-4">
           <div className="text-center text-xs text-muted-foreground">

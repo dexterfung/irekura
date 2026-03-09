@@ -45,4 +45,9 @@ export default defineSchema({
     sourness: v.number(),
     richness: v.number(),
   }).index("by_user_type", ["userId", "type"]),
+
+  userSettings: defineTable({
+    userId: v.string(),
+    theme: v.union(v.literal("system"), v.literal("light"), v.literal("dark")),
+  }).index("by_user", ["userId"]),
 });

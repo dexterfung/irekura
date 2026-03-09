@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import ConvexClientProvider from "@/components/ConvexClientProvider";
+import ThemeSync from "@/components/ThemeSync";
 import { auth } from "@/lib/auth";
 
 export const metadata: Metadata = {
@@ -30,7 +31,10 @@ export default async function RootLayout({
       </head>
       <body>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <ConvexClientProvider session={session}>{children}</ConvexClientProvider>
+          <ConvexClientProvider session={session}>
+            <ThemeSync />
+            {children}
+          </ConvexClientProvider>
         </ThemeProvider>
       </body>
     </html>
