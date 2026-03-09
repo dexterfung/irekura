@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ThemeProvider } from "next-themes";
 import ConvexClientProvider from "@/components/ConvexClientProvider";
 import { auth } from "@/lib/auth";
 
@@ -22,13 +23,15 @@ export default async function RootLayout({
   const session = await auth();
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta name="theme-color" content="#1a1a1a" />
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
       </head>
       <body>
-        <ConvexClientProvider session={session}>{children}</ConvexClientProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ConvexClientProvider session={session}>{children}</ConvexClientProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

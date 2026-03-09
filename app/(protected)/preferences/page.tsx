@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTheme } from "next-themes";
 import { signOut, useSession } from "next-auth/react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -11,6 +12,7 @@ import type { FlavorProfile } from "@/lib/recommendations/engine";
 export default function PreferencesPage() {
   const [isSaving, setIsSaving] = useState(false);
   const { data: session } = useSession();
+  const { theme, setTheme } = useTheme();
 
   const weekdayProfile = useQuery(api.preferences.get, { type: "weekday" });
   const weekendProfile = useQuery(api.preferences.get, { type: "weekend" });
@@ -37,6 +39,25 @@ export default function PreferencesPage() {
         <p className="text-sm text-muted-foreground mb-4">
           Set how much each flavour dimension matters when getting recommendations.
         </p>
+
+        <div className="mb-6">
+          <p className="text-sm font-medium mb-2">Appearance</p>
+          <div className="grid grid-cols-3 gap-2">
+            {(["system", "light", "dark"] as const).map((option) => (
+              <button
+                key={option}
+                onClick={() => setTheme(option)}
+                className={`rounded-lg border px-3 py-2 text-sm font-medium capitalize transition-colors ${
+                  theme === option
+                    ? "border-foreground bg-foreground text-background"
+                    : "border-border hover:bg-accent"
+                }`}
+              >
+                {option === "system" ? "System" : option === "light" ? "Light" : "Dark"}
+              </button>
+            ))}
+          </div>
+        </div>
 
         <div className="mb-6 rounded-lg border border-border p-4 flex items-center justify-between gap-3">
           <div className="min-w-0">
