@@ -1,6 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,6 +35,87 @@ interface ProductFormProps {
   onSubmit: (values: ProductFormValues) => void;
   submitLabel?: string;
   isLoading?: boolean;
+}
+
+function AutocompleteInput({
+  id,
+  value,
+  onChange,
+  suggestions,
+  placeholder,
+  required,
+  maxLength,
+}: {
+  id: string;
+  value: string;
+  onChange: (v: string) => void;
+  suggestions: string[];
+  placeholder?: string;
+  required?: boolean;
+  maxLength?: number;
+}) {
+  const [open, setOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [rect, setRect] = useState<DOMRect | null>(null);
+
+  const filtered = value.trim()
+    ? suggestions.filter(
+        (s) =>
+          s.toLowerCase().includes(value.toLowerCase()) &&
+          s.toLowerCase() !== value.toLowerCase()
+      )
+    : [];
+
+  function updateRect() {
+    if (inputRef.current) setRect(inputRef.current.getBoundingClientRect());
+  }
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (!inputRef.current?.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  return (
+    <>
+      <Input
+        ref={inputRef}
+        id={id}
+        value={value}
+        onChange={(e) => { onChange(e.target.value); updateRect(); setOpen(true); }}
+        onFocus={() => { updateRect(); setOpen(true); }}
+        placeholder={placeholder}
+        required={required}
+        maxLength={maxLength}
+        autoComplete="off"
+      />
+      {open && filtered.length > 0 && rect && createPortal(
+        <ul
+          style={{
+            position: "fixed",
+            top: rect.bottom + 4,
+            left: rect.left,
+            width: rect.width,
+            zIndex: 9999,
+          }}
+          className="rounded-md border border-border bg-popover text-popover-foreground shadow-lg max-h-48 overflow-y-auto"
+        >
+          {filtered.slice(0, 6).map((s) => (
+            <li
+              key={s}
+              onMouseDown={(e) => { e.preventDefault(); onChange(s); setOpen(false); }}
+              className="px-3 py-2 text-sm cursor-pointer hover:bg-accent"
+            >
+              {s}
+            </li>
+          ))}
+        </ul>,
+        document.body
+      )}
+    </>
+  );
 }
 
 function StarSelector({
@@ -74,6 +158,10 @@ export default function ProductForm({
 }: ProductFormProps) {
   const [name, setName] = useState(defaultValues?.name ?? "");
   const [brand, setBrand] = useState(defaultValues?.brand ?? "");
+
+  const allProducts = useQuery(api.products.list) ?? [];
+  const nameSuggestions = [...new Set(allProducts.map((p) => p.name))];
+  const brandSuggestions = [...new Set(allProducts.map((p) => p.brand))];
   const [type, setType] = useState<CoffeeType>(defaultValues?.type ?? "drip-bag");
   const [bitterness, setBitterness] = useState(defaultValues?.bitterness ?? 3);
   const [sourness, setSourness] = useState(defaultValues?.sourness ?? 3);
@@ -89,10 +177,11 @@ export default function ProductForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="product-name">Name</Label>
-        <Input
+        <AutocompleteInput
           id="product-name"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={setName}
+          suggestions={nameSuggestions}
           placeholder="e.g. Ethiopian Yirgacheffe"
           required
           maxLength={100}
@@ -101,10 +190,11 @@ export default function ProductForm({
 
       <div className="space-y-2">
         <Label htmlFor="product-brand">Brand</Label>
-        <Input
+        <AutocompleteInput
           id="product-brand"
           value={brand}
-          onChange={(e) => setBrand(e.target.value)}
+          onChange={setBrand}
+          suggestions={brandSuggestions}
           placeholder="e.g. Blue Bottle"
           required
           maxLength={100}
