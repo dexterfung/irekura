@@ -26,7 +26,8 @@ export async function GET() {
     .setExpirationTime("1h")
     .setAudience("convex")
     .setIssuer(
-      process.env.NEXTAUTH_URL ?? "http://localhost:3000"
+      process.env.NEXT_PUBLIC_CONVEX_SITE_URL ??
+        "https://strong-zebra-965.eu-west-1.convex.site"
     )
     .sign(privateKey);
 

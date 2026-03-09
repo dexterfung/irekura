@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const issuer = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
+  const issuer = process.env.AUTH_URL ?? process.env.NEXTAUTH_URL ?? "http://localhost:3000";
 
   return NextResponse.json({
     issuer,

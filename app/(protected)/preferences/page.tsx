@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { signOut, useSession } from "next-auth/react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,6 +10,7 @@ import type { FlavorProfile } from "@/lib/recommendations/engine";
 
 export default function PreferencesPage() {
   const [isSaving, setIsSaving] = useState(false);
+  const { data: session } = useSession();
 
   const weekdayProfile = useQuery(api.preferences.get, { type: "weekday" });
   const weekendProfile = useQuery(api.preferences.get, { type: "weekend" });
@@ -35,6 +37,19 @@ export default function PreferencesPage() {
         <p className="text-sm text-muted-foreground mb-4">
           Set how much each flavour dimension matters when getting recommendations.
         </p>
+
+        <div className="mb-6 rounded-lg border border-border p-4 flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-sm font-medium truncate">{session?.user?.name}</p>
+            <p className="text-xs text-muted-foreground truncate">{session?.user?.email}</p>
+          </div>
+          <button
+            onClick={() => signOut({ callbackUrl: "/auth/signin" })}
+            className="shrink-0 rounded-lg border border-border px-3 py-2 text-sm font-medium text-destructive hover:bg-accent transition-colors"
+          >
+            Sign out
+          </button>
+        </div>
 
         {isLoading ? (
           <div className="space-y-4 animate-pulse">
