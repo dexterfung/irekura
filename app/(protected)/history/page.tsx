@@ -108,7 +108,8 @@ export default function HistoryPage() {
       {/* Quick-log FAB */}
       <Button
         size="icon"
-        className="fixed bottom-24 right-4 h-14 w-14 rounded-full shadow-lg"
+        className="fixed right-4 h-14 w-14 rounded-full shadow-lg"
+        style={{ bottom: "calc(5.5rem + env(safe-area-inset-bottom))" }}
         onClick={() => setLogDialogOpen(true)}
         aria-label="Log coffee"
       >

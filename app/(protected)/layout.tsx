@@ -31,7 +31,7 @@ export default async function ProtectedLayout({
           <PageHeader />
         </div>
 
-        <main className="flex-1 pt-16 pb-20 lg:pt-0 lg:pb-0">
+        <main className="flex-1 pt-16 lg:pt-0 lg:pb-0" style={{ paddingBottom: "calc(5rem + env(safe-area-inset-bottom))" }}>
           <div className="px-4 pt-4 pb-2">
             <PageTitle />
           </div>

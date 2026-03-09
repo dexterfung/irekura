@@ -150,7 +150,8 @@ export default function InventoryPage() {
       <Button
         asChild
         size="icon"
-        className="fixed bottom-24 right-4 h-14 w-14 rounded-full shadow-lg lg:bottom-6"
+        className="fixed right-4 h-14 w-14 rounded-full shadow-lg lg:bottom-6"
+        style={{ bottom: "calc(5.5rem + env(safe-area-inset-bottom))" }}
         aria-label="Add new coffee"
       >
         <Link href="/inventory/new">
