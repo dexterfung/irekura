@@ -63,7 +63,7 @@ export default function PreferencesPage() {
               <button
                 key={option}
                 onClick={() => { setTheme(option); void saveTheme({ theme: option }); }}
-                className={`rounded-lg border px-3 py-2 text-sm font-medium capitalize transition-colors ${
+                className={`rounded-lg border px-3 py-2 text-sm font-medium capitalize transition-colors cursor-pointer ${
                   theme === option
                     ? "border-foreground bg-foreground text-background"
                     : "border-border hover:bg-accent"

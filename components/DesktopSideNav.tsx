@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Package, Coffee, Calendar, Settings, LogOut } from "lucide-react";
+import { Package, Coffee, Calendar, Settings, LogOut, Sun, Moon, Monitor } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -14,10 +16,17 @@ const navItems = [
   { href: "/preferences", label: "Preferences", icon: Settings },
 ];
 
+const THEME_OPTIONS = [
+  { value: "system", icon: Monitor, label: "System" },
+  { value: "light", icon: Sun, label: "Light" },
+  { value: "dark", icon: Moon, label: "Dark" },
+] as const;
+
 export default function DesktopSideNav() {
   const pathname = usePathname();
   const { data: session } = useSession();
-  const { setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
+  const saveTheme = useMutation(api.settings.setTheme);
 
   return (
     <nav className="hidden lg:flex fixed left-0 top-0 bottom-0 w-56 z-50 border-r border-border bg-background flex-col py-6 px-3">
@@ -40,6 +49,28 @@ export default function DesktopSideNav() {
             </Link>
           );
         })}
+      </div>
+
+      {/* Theme toggle */}
+      <div className="flex items-center gap-1 px-3 py-2 mb-1">
+        {THEME_OPTIONS.map(({ value, icon: Icon, label }) => (
+          <button
+            key={value}
+            onClick={() => { setTheme(value); void saveTheme({ theme: value }); }}
+            className={cn(
+              "flex-1 flex items-center justify-center py-1.5 rounded-md transition-colors cursor-pointer group relative",
+              theme === value
+                ? "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400"
+                : "text-muted-foreground hover:bg-accent hover:text-foreground"
+            )}
+            aria-label={label}
+          >
+            <Icon className="h-4 w-4" />
+            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 text-xs rounded bg-foreground text-background whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+              {label}
+            </span>
+          </button>
+        ))}
       </div>
 
       {/* User info at bottom */}
