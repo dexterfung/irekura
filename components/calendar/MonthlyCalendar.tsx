@@ -99,7 +99,7 @@ export default function MonthlyCalendar({
               key={dateISO}
               onClick={() => onSelectDate(dateISO)}
               className={cn(
-                "relative flex flex-col items-center justify-center rounded-lg aspect-square text-sm transition-colors min-h-[40px]",
+                "relative flex flex-col items-center justify-center rounded-lg aspect-square text-sm transition-colors min-h-[40px] cursor-pointer",
                 isSelected && "bg-primary text-primary-foreground",
                 !isSelected && isTodayDate && "border border-primary",
                 !isSelected && !isTodayDate && "hover:bg-accent"

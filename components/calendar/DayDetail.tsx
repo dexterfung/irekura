@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id, Doc } from "@/convex/_generated/dataModel";
@@ -10,11 +11,11 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { format, parseISO } from "date-fns";
-import { cn } from "@/lib/utils";
 
 interface DayDetailEntry {
   log: Doc<"consumptionLogs">;
   product: Doc<"products">;
+  batch: Doc<"batches"> | null;
 }
 
 interface DayDetailProps {
@@ -22,6 +23,9 @@ interface DayDetailProps {
   entries: DayDetailEntry[];
   onClose: () => void;
 }
+
+const STAR_YELLOW = "#facc15";
+const STAR_GREY = "var(--color-muted-foreground, #9ca3af)";
 
 function StarRating({
   value,
@@ -32,22 +36,25 @@ function StarRating({
   logId: Id<"consumptionLogs">;
   onRate: (id: Id<"consumptionLogs">, rating: number) => void;
 }) {
+  const [hoverValue, setHoverValue] = useState<number | null>(null);
+  const activeValue = hoverValue ?? value ?? 0;
+
   return (
-    <div className="flex gap-1">
+    <div className="flex" onMouseLeave={() => setHoverValue(null)}>
       {[1, 2, 3, 4, 5].map((star) => (
-        <button
+        <span
           key={star}
+          role="button"
+          tabIndex={0}
           onClick={() => onRate(logId, star)}
-          className={cn(
-            "text-xl min-w-[32px] min-h-[32px] transition-colors",
-            value !== undefined && star <= value
-              ? "text-yellow-400"
-              : "text-muted-foreground hover:text-yellow-400"
-          )}
+          onMouseEnter={() => setHoverValue(star)}
+          onKeyDown={(e) => e.key === "Enter" && onRate(logId, star)}
+          className="text-2xl px-0.5 cursor-pointer leading-none transition-colors"
+          style={{ color: star <= activeValue ? STAR_YELLOW : STAR_GREY }}
           aria-label={`Rate ${star} star${star !== 1 ? "s" : ""}`}
         >
           ★
-        </button>
+        </span>
       ))}
     </div>
   );
@@ -77,17 +84,14 @@ export default function DayDetail({ date, entries, onClose }: DayDetailProps) {
               No coffee logged on this day
             </p>
           ) : (
-            entries.map(({ log, product }) => (
+            entries.map(({ log, product, batch }) => (
               <div key={log._id} className="border rounded-lg p-3 space-y-2">
                 <div>
                   <div className="font-medium">{product.name}</div>
                   <div className="text-sm text-muted-foreground">{product.brand}</div>
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  Batch best before: {
-                    // We can't easily look up batch from here; log has batchId
-                    log.batchId as string
-                  }
+                  Batch best before: {batch?.bestBeforeDate ?? "—"}
                 </div>
                 <div className="space-y-1">
                   <div className="text-xs text-muted-foreground">Rating</div>

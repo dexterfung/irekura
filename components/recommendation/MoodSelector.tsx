@@ -44,7 +44,7 @@ export default function MoodSelector({ selected, onSelect }: MoodSelectorProps) 
           type="button"
           onClick={() => onSelect(value)}
           className={cn(
-            "flex flex-col items-center gap-1 rounded-xl border p-4 text-center transition-colors min-h-[88px]",
+            "flex flex-col items-center gap-1 rounded-xl border p-4 text-center transition-colors min-h-[88px] cursor-pointer",
             selected === value
               ? "border-primary bg-primary text-primary-foreground"
               : "border-border bg-card hover:bg-accent"

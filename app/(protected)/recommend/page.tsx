@@ -24,6 +24,27 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
+function RatingStars({ onRate }: { onRate: (rating: number) => void }) {
+  const [hoverValue, setHoverValue] = useState<number | null>(null);
+  return (
+    <div className="flex justify-center gap-1 py-4" onMouseLeave={() => setHoverValue(null)}>
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button
+          key={star}
+          type="button"
+          onClick={() => onRate(star)}
+          onMouseEnter={() => setHoverValue(star)}
+          className="text-4xl cursor-pointer transition-colors min-w-[44px] min-h-[44px]"
+          style={{ color: star <= (hoverValue ?? 0) ? "#facc15" : "var(--color-muted-foreground, #9ca3af)" }}
+          aria-label={`${star} star${star !== 1 ? "s" : ""}`}
+        >
+          ★
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export default function RecommendPage() {
   const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -155,18 +176,7 @@ export default function RecommendPage() {
           <DialogHeader>
             <DialogTitle>How was it? (optional)</DialogTitle>
           </DialogHeader>
-          <div className="flex justify-center gap-2 py-4">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <button
-                key={star}
-                onClick={() => handleRate(star)}
-                className="text-4xl text-muted-foreground hover:text-yellow-400 transition-colors min-w-[44px] min-h-[44px]"
-                aria-label={`${star} star${star !== 1 ? "s" : ""}`}
-              >
-                ★
-              </button>
-            ))}
-          </div>
+          <RatingStars onRate={handleRate} />
           <DialogFooter>
             <Button
               variant="ghost"

@@ -53,7 +53,7 @@ function StarSelector({
             type="button"
             onClick={() => onChange(star)}
             className={cn(
-              "text-2xl transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center",
+              "text-2xl transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center cursor-pointer",
               star <= value ? "text-yellow-400" : "text-muted-foreground"
             )}
             aria-label={`${star} star${star !== 1 ? "s" : ""}`}
@@ -120,7 +120,7 @@ export default function ProductForm({
               type="button"
               onClick={() => setType(value)}
               className={cn(
-                "rounded-md border px-3 py-2 text-sm font-medium transition-colors min-h-[44px]",
+                "rounded-md border px-3 py-2 text-sm font-medium transition-colors min-h-[44px] cursor-pointer",
                 type === value
                   ? "border-primary bg-primary text-primary-foreground"
                   : "border-input bg-background hover:bg-accent"

@@ -83,7 +83,7 @@ export default function WeeklyStrip({
               key={dateISO}
               onClick={() => onSelectDate(dateISO)}
               className={cn(
-                "relative flex flex-col items-center justify-center rounded-lg py-2 text-xs gap-0.5 min-h-[56px] transition-colors",
+                "relative flex flex-col items-center justify-center rounded-lg py-2 text-xs gap-0.5 min-h-[56px] transition-colors cursor-pointer",
                 isSelected && "bg-primary text-primary-foreground",
                 !isSelected && isTodayDate && "border border-primary",
                 !isSelected && !isTodayDate && "hover:bg-accent"

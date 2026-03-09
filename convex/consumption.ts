@@ -28,7 +28,8 @@ export const listByMonth = query({
       logs.map(async (log) => {
         const product = await ctx.db.get(log.productId);
         if (!product) return null;
-        return { log, product };
+        const batch = await ctx.db.get(log.batchId);
+        return { log, product, batch };
       })
     );
 

@@ -63,7 +63,7 @@ export default function PWAInstallPrompt() {
         </div>
         <button
           onClick={handleDismiss}
-          className="text-muted-foreground hover:text-foreground text-lg leading-none shrink-0"
+          className="text-muted-foreground hover:text-foreground text-lg leading-none shrink-0 cursor-pointer"
           aria-label="Dismiss"
         >
           ×
@@ -72,7 +72,7 @@ export default function PWAInstallPrompt() {
       {!isIOS && (
         <button
           onClick={handleInstall}
-          className="mt-3 w-full rounded-lg bg-foreground text-background text-sm font-medium py-2 hover:opacity-90 transition-opacity"
+          className="mt-3 w-full rounded-lg bg-foreground text-background text-sm font-medium py-2 hover:opacity-90 transition-opacity cursor-pointer"
         >
           Install
         </button>
