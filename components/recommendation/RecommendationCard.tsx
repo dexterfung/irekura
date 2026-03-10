@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import type { ScoredBatch } from "@/lib/recommendations/engine";
+import { useTranslations } from "next-intl";
 
 interface RecommendationCardProps {
   recommendation: ScoredBatch;
@@ -11,13 +12,6 @@ interface RecommendationCardProps {
   onShowAnother: () => void;
   hasMore: boolean;
 }
-
-const TYPE_LABELS: Record<string, string> = {
-  "drip-bag": "Drip Bag",
-  "ground-bean": "Ground Bean",
-  "concentrate-capsule": "Capsule",
-  "instant-powder": "Instant",
-};
 
 const URGENCY_VARIANTS = {
   expired: "expired" as const,
@@ -55,7 +49,18 @@ export default function RecommendationCard({
   onShowAnother,
   hasMore,
 }: RecommendationCardProps) {
+  const t = useTranslations("recommend");
+  const tTypes = useTranslations("productTypes");
+  const tForm = useTranslations("productForm");
+  const tInventory = useTranslations("inventory");
+
   const { product, brewsRemaining, bestBeforeDate, expiryUrgency } = recommendation;
+
+  const urgencyLabels: Record<string, string> = {
+    expired: tInventory("expired"),
+    urgent: tInventory("urgent"),
+    warning: tInventory("expiringSoon"),
+  };
 
   return (
     <Card className="w-full">
@@ -65,29 +70,27 @@ export default function RecommendationCard({
             <h2 className="text-xl font-bold">{product.name}</h2>
             <p className="text-muted-foreground">{product.brand}</p>
           </div>
-          <Badge variant="secondary">{TYPE_LABELS[product.type]}</Badge>
+          <Badge variant="secondary">
+            {tTypes(product.type as "drip-bag" | "ground-bean" | "concentrate-capsule" | "instant-powder")}
+          </Badge>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <FlavorBar label="Bitterness" value={product.bitterness} />
-          <FlavorBar label="Sourness" value={product.sourness} />
-          <FlavorBar label="Richness" value={product.richness} />
+          <FlavorBar label={tForm("bitterness")} value={product.bitterness} />
+          <FlavorBar label={tForm("sourness")} value={product.sourness} />
+          <FlavorBar label={tForm("richness")} value={product.richness} />
         </div>
 
         <div className="flex items-center justify-between text-sm">
           <span className="text-muted-foreground">
-            {brewsRemaining} brew{brewsRemaining !== 1 ? "s" : ""} remaining
+            {t("brewsRemaining", { count: brewsRemaining })}
           </span>
           <div className="flex items-center gap-2">
-            <span className="text-muted-foreground text-xs">Best before: {bestBeforeDate}</span>
+            <span className="text-muted-foreground text-xs">{t("bestBefore", { date: bestBeforeDate })}</span>
             {expiryUrgency !== "ok" && (
               <Badge variant={URGENCY_VARIANTS[expiryUrgency]}>
-                {expiryUrgency === "expired"
-                  ? "Expired"
-                  : expiryUrgency === "urgent"
-                    ? "Urgent"
-                    : "Soon"}
+                {urgencyLabels[expiryUrgency]}
               </Badge>
             )}
           </div>
@@ -95,7 +98,7 @@ export default function RecommendationCard({
 
         <div className="space-y-2">
           <Button onClick={onDrink} className="w-full min-h-[44px]">
-            Drink This ☕
+            {t("drink")}
           </Button>
           {hasMore && (
             <Button
@@ -103,7 +106,7 @@ export default function RecommendationCard({
               onClick={onShowAnother}
               className="w-full text-muted-foreground"
             >
-              Show Another
+              {t("showAnother")}
             </Button>
           )}
         </div>

@@ -2,33 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import type { Mood } from "@/lib/recommendations/engine";
-
-const MOODS: { value: Mood; label: string; emoji: string; description: string }[] = [
-  {
-    value: "light-bright",
-    label: "Light & Bright",
-    emoji: "☀️",
-    description: "Citrusy and refreshing",
-  },
-  {
-    value: "strong-rich",
-    label: "Strong & Rich",
-    emoji: "💪",
-    description: "Bold and intense",
-  },
-  {
-    value: "smooth-balanced",
-    label: "Smooth & Balanced",
-    emoji: "⚖️",
-    description: "Well-rounded",
-  },
-  {
-    value: "surprise-me",
-    label: "Surprise Me",
-    emoji: "🎲",
-    description: "Something different",
-  },
-];
+import { useTranslations } from "next-intl";
 
 interface MoodSelectorProps {
   selected: Mood | null;
@@ -36,6 +10,35 @@ interface MoodSelectorProps {
 }
 
 export default function MoodSelector({ selected, onSelect }: MoodSelectorProps) {
+  const t = useTranslations("recommend");
+
+  const MOODS: { value: Mood; label: string; emoji: string; description: string }[] = [
+    {
+      value: "light-bright",
+      label: t("lightBright"),
+      emoji: "☀️",
+      description: t("lightBrightDesc"),
+    },
+    {
+      value: "strong-rich",
+      label: t("strongRich"),
+      emoji: "💪",
+      description: t("strongRichDesc"),
+    },
+    {
+      value: "smooth-balanced",
+      label: t("smoothBalanced"),
+      emoji: "⚖️",
+      description: t("smoothBalancedDesc"),
+    },
+    {
+      value: "surprise-me",
+      label: t("surpriseMe"),
+      emoji: "🎲",
+      description: t("surpriseMeDesc"),
+    },
+  ];
+
   return (
     <div className="grid grid-cols-2 gap-3">
       {MOODS.map(({ value, label, emoji, description }) => (

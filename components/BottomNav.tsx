@@ -4,16 +4,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Package, Coffee, Calendar, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const navItems = [
-  { href: "/inventory", label: "Inventory", icon: Package },
-  { href: "/recommend", label: "Recommend", icon: Coffee },
-  { href: "/history", label: "History", icon: Calendar },
-  { href: "/preferences", label: "Preferences", icon: Settings },
-];
+import { useTranslations } from "next-intl";
 
 export default function BottomNav() {
   const pathname = usePathname();
+  const t = useTranslations("nav");
+
+  const navItems = [
+    { href: "/inventory", label: t("inventory"), icon: Package },
+    { href: "/recommend", label: t("recommend"), icon: Coffee },
+    { href: "/history", label: t("history"), icon: Calendar },
+    { href: "/preferences", label: t("preferences"), icon: Settings },
+  ];
 
   return (
     <nav

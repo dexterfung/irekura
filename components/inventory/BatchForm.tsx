@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useTranslations } from "next-intl";
 
 interface BatchFormValues {
   brewsRemaining: number;
@@ -20,9 +21,12 @@ interface BatchFormProps {
 export default function BatchForm({
   defaultValues,
   onSubmit,
-  submitLabel = "Add Batch",
+  submitLabel,
   isLoading = false,
 }: BatchFormProps) {
+  const t = useTranslations("batchForm");
+  const tCommon = useTranslations("common");
+
   const [brewsRemaining, setBrewsRemaining] = useState(
     defaultValues?.brewsRemaining?.toString() ?? "10"
   );
@@ -38,7 +42,7 @@ export default function BatchForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="brews-remaining">Brews Remaining</Label>
+        <Label htmlFor="brews-remaining">{t("brewsRemaining")}</Label>
         <Input
           id="brews-remaining"
           type="number"
@@ -46,12 +50,12 @@ export default function BatchForm({
           onChange={(e) => setBrewsRemaining(e.target.value)}
           min={1}
           required
-          placeholder="e.g. 10"
+          placeholder={t("brewsPlaceholder")}
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="best-before">Best Before Date</Label>
+        <Label htmlFor="best-before">{t("bestBeforeDate")}</Label>
         <Input
           id="best-before"
           type="date"
@@ -62,7 +66,7 @@ export default function BatchForm({
       </div>
 
       <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? "Saving..." : submitLabel}
+        {isLoading ? tCommon("saving") : (submitLabel ?? t("addBatch"))}
       </Button>
     </form>
   );

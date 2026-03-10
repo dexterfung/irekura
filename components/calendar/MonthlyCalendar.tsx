@@ -11,6 +11,7 @@ import {
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface MonthlyCalendarProps {
   year: number;
@@ -21,8 +22,6 @@ interface MonthlyCalendarProps {
   onNavigate: (year: number, month: number) => void;
 }
 
-const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
 export default function MonthlyCalendar({
   year,
   month,
@@ -31,6 +30,19 @@ export default function MonthlyCalendar({
   onSelectDate,
   onNavigate,
 }: MonthlyCalendarProps) {
+  const t = useTranslations("calendar");
+  const tCommon = useTranslations("common");
+
+  const WEEKDAY_LABELS = [
+    t("sun"),
+    t("mon"),
+    t("tue"),
+    t("wed"),
+    t("thu"),
+    t("fri"),
+    t("sat"),
+  ];
+
   const firstDay = startOfMonth(new Date(year, month - 1));
   const daysInMonth = getDaysInMonth(firstDay);
   const startDayOfWeek = getDay(firstDay);
@@ -71,7 +83,7 @@ export default function MonthlyCalendar({
           </Button>
         </div>
         <Button variant="outline" size="sm" onClick={handleToday}>
-          Today
+          {tCommon("today")}
         </Button>
       </div>
 

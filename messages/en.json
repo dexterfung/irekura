@@ -1,0 +1,192 @@
+{
+  "nav": {
+    "inventory": "My Coffee",
+    "recommend": "Recommend",
+    "history": "History",
+    "preferences": "Preferences"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "saving": "Saving...",
+    "signOut": "Sign out",
+    "done": "Done",
+    "clearAll": "Clear all",
+    "backToInventory": "Back to inventory",
+    "today": "Today",
+    "system": "System",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "auth": {
+    "title": "Irekura",
+    "subtitle": "Your personal coffee inventory manager",
+    "description": "Track your coffee collection and get smart daily recommendations",
+    "signInWithGoogle": "Continue with Google",
+    "signInFailed": "Sign in failed. Please try again."
+  },
+  "productTypes": {
+    "drip-bag": "Drip Bag",
+    "ground-bean": "Ground Bean",
+    "concentrate-capsule": "Capsule",
+    "instant-powder": "Instant"
+  },
+  "inventory": {
+    "pageTitle": "My Coffee",
+    "addCoffee": "Add Coffee",
+    "addNewCoffeeAria": "Add new coffee",
+    "emptyTitle": "No coffee yet",
+    "emptyDescription": "Add your first coffee product to get started",
+    "noResults": "No coffees match the current filters.",
+    "clearFilters": "Clear filters",
+    "brewsRemaining": "{count, plural, one {# brew remaining} other {# brews remaining}}",
+    "earliestBestBefore": "Earliest best before: {date}",
+    "expired": "Expired",
+    "expiringSoon": "Expiring soon",
+    "depleted": "Depleted",
+    "urgent": "Urgent",
+    "good": "Good"
+  },
+  "filters": {
+    "type": "Type",
+    "status": "Status",
+    "brand": "Brand",
+    "sort": "Sort",
+    "allTypes": "All Types",
+    "allStatuses": "All",
+    "allBrands": "All Brands",
+    "active": "Active",
+    "expiringSoon": "Expiring Soon",
+    "expired": "Expired",
+    "sortName": "Name (A→Z)",
+    "sortBrews": "Brews Remaining",
+    "sortBestBefore": "Best Before",
+    "filtersTitle": "Filters",
+    "sortByTitle": "Sort by",
+    "coffeeCount": "{count, plural, one {# coffee} other {# coffees}}",
+    "filteredCount": "{filtered} of {total}"
+  },
+  "productForm": {
+    "name": "Name",
+    "namePlaceholder": "e.g. Ethiopian Yirgacheffe",
+    "brand": "Brand",
+    "brandPlaceholder": "e.g. Blue Bottle",
+    "type": "Type",
+    "flavorProfile": "Flavour Profile",
+    "notes": "Notes (optional)",
+    "notesPlaceholder": "Any additional notes...",
+    "bitterness": "Bitterness",
+    "sourness": "Sourness",
+    "richness": "Richness"
+  },
+  "batchForm": {
+    "brewsRemaining": "Brews Remaining",
+    "brewsPlaceholder": "e.g. 10",
+    "bestBeforeDate": "Best Before Date",
+    "addBatch": "Add Batch",
+    "bestBefore": "Best before: {date}"
+  },
+  "newProduct": {
+    "title": "Add Coffee",
+    "step1Description": "Step 1 of 2: Tell us about this coffee",
+    "addFirstBatch": "Add First Batch",
+    "step2Description": "Step 2 of 2: Add your first purchase batch",
+    "nextStep": "Next: Add Batch",
+    "addToInventory": "Add to Inventory"
+  },
+  "productDetail": {
+    "editProduct": "Edit Product",
+    "saveChanges": "Save Changes",
+    "addBatch": "Add Batch",
+    "addNewBatch": "Add New Batch",
+    "batches": "Batches",
+    "noBatches": "No batches yet",
+    "editBrewsRemaining": "Edit Brews Remaining",
+    "brewsRemainingLabel": "Brews Remaining",
+    "deleteBatch": "Delete Batch",
+    "deleteBatchConfirm": "This will permanently delete the batch and all its consumption logs.",
+    "deleteProduct": "Delete Product",
+    "deleteProductConfirm": "This will permanently delete \"{name}\" and all its batches and consumption history.",
+    "productNotFound": "Product not found",
+    "editQuantityAria": "Edit quantity",
+    "deleteBatchAria": "Delete batch"
+  },
+  "preferences": {
+    "pageTitle": "Preferences",
+    "appearance": "Appearance",
+    "flavorPreferences": "Flavour Preferences",
+    "flavorDescription": "Set how much each flavour dimension matters when getting recommendations.",
+    "weekday": "Weekday",
+    "weekend": "Weekend",
+    "language": "Language",
+    "saved": "Preferences saved.",
+    "saveFailed": "Failed to save. Please try again.",
+    "unsavedTitle": "Unsaved changes",
+    "unsavedMessage": "You have unsaved flavour preference changes. If you leave now they will be lost.",
+    "stay": "Stay",
+    "leave": "Leave anyway"
+  },
+  "profileForm": {
+    "bitternessImportance": "Bitterness Importance",
+    "sournessImportance": "Sourness Importance",
+    "richnessImportance": "Richness Importance",
+    "saveProfile": "Save Profile"
+  },
+  "recommend": {
+    "pageTitle": "Recommend",
+    "noInventoryTitle": "No coffee in inventory",
+    "noInventoryDescription": "Add some coffee to get recommendations",
+    "addCoffee": "Add Coffee",
+    "recommendedForYou": "Recommended for you",
+    "noRecommendations": "No recommendations available for this mood.",
+    "ratingPrompt": "How was it? (optional)",
+    "skip": "Skip",
+    "drink": "Drink This ☕",
+    "showAnother": "Show Another",
+    "brewsRemaining": "{count, plural, one {# brew remaining} other {# brews remaining}}",
+    "bestBefore": "Best before: {date}",
+    "lightBright": "Light & Bright",
+    "lightBrightDesc": "Citrusy and refreshing",
+    "strongRich": "Strong & Rich",
+    "strongRichDesc": "Bold and intense",
+    "smoothBalanced": "Smooth & Balanced",
+    "smoothBalancedDesc": "Well-rounded",
+    "surpriseMe": "Surprise Me",
+    "surpriseMeDesc": "Something different"
+  },
+  "history": {
+    "pageTitle": "History",
+    "logCoffee": "Log Coffee",
+    "logCoffeeAria": "Log coffee",
+    "logging": "Logging...",
+    "product": "Product",
+    "batch": "Batch",
+    "date": "Date",
+    "ratingOptional": "Rating (optional)",
+    "selectProduct": "Select product",
+    "selectBatch": "Select batch",
+    "noRating": "No rating",
+    "noCoffeeLogged": "No coffee logged on this day",
+    "batchBestBefore": "Batch best before: {date}"
+  },
+  "calendar": {
+    "sun": "Sun",
+    "mon": "Mon",
+    "tue": "Tue",
+    "wed": "Wed",
+    "thu": "Thu",
+    "fri": "Fri",
+    "sat": "Sat"
+  },
+  "pwa": {
+    "title": "Add Irekura to Home Screen",
+    "iosHint": "Tap the share icon ⎙ then \"Add to Home Screen\"",
+    "androidHint": "Install for quick access from your home screen",
+    "install": "Install",
+    "dismiss": "Dismiss"
+  },
+  "starRating": {
+    "star": "{count, plural, one {# star} other {# stars}}"
+  }
+}

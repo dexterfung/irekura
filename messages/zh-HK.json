@@ -1,0 +1,192 @@
+{
+  "nav": {
+    "inventory": "我的咖啡",
+    "recommend": "推薦",
+    "history": "歷史",
+    "preferences": "設定"
+  },
+  "common": {
+    "save": "儲存",
+    "cancel": "取消",
+    "delete": "刪除",
+    "saving": "儲存中…",
+    "signOut": "登出",
+    "done": "完成",
+    "clearAll": "清除全部",
+    "backToInventory": "返回庫存",
+    "today": "今日",
+    "system": "系統",
+    "light": "淺色",
+    "dark": "深色"
+  },
+  "auth": {
+    "title": "Irekura",
+    "subtitle": "你的個人咖啡庫存管理員",
+    "description": "管理你的咖啡收藏，並獲取每日智能推薦",
+    "signInWithGoogle": "以 Google 繼續",
+    "signInFailed": "登入失敗，請重試。"
+  },
+  "productTypes": {
+    "drip-bag": "掛耳包",
+    "ground-bean": "咖啡粉",
+    "concentrate-capsule": "膠囊",
+    "instant-powder": "即溶"
+  },
+  "inventory": {
+    "pageTitle": "我的咖啡",
+    "addCoffee": "新增咖啡",
+    "addNewCoffeeAria": "新增咖啡",
+    "emptyTitle": "未有咖啡",
+    "emptyDescription": "新增你的第一款咖啡產品以開始使用",
+    "noResults": "沒有符合篩選條件的咖啡。",
+    "clearFilters": "清除篩選",
+    "brewsRemaining": "剩餘 {count} 杯",
+    "earliestBestBefore": "最早此日期前最佳：{date}",
+    "expired": "已過期",
+    "expiringSoon": "即將到期",
+    "depleted": "已用完",
+    "urgent": "緊急",
+    "good": "良好"
+  },
+  "filters": {
+    "type": "類型",
+    "status": "狀態",
+    "brand": "品牌",
+    "sort": "排序",
+    "allTypes": "所有類型",
+    "allStatuses": "全部",
+    "allBrands": "所有品牌",
+    "active": "有存貨",
+    "expiringSoon": "即將到期",
+    "expired": "已過期",
+    "sortName": "名稱（A→Z）",
+    "sortBrews": "剩餘杯數",
+    "sortBestBefore": "此日期前最佳",
+    "filtersTitle": "篩選",
+    "sortByTitle": "排序方式",
+    "coffeeCount": "共 {count} 款",
+    "filteredCount": "{filtered} / {total}"
+  },
+  "productForm": {
+    "name": "名稱",
+    "namePlaceholder": "例：埃塞俄比亞耶加雪菲",
+    "brand": "品牌",
+    "brandPlaceholder": "例：Blue Bottle",
+    "type": "類型",
+    "flavorProfile": "風味特性",
+    "notes": "備註（選填）",
+    "notesPlaceholder": "任何額外備註…",
+    "bitterness": "苦度",
+    "sourness": "酸度",
+    "richness": "濃郁度"
+  },
+  "batchForm": {
+    "brewsRemaining": "剩餘杯數",
+    "brewsPlaceholder": "例：10",
+    "bestBeforeDate": "此日期前最佳",
+    "addBatch": "新增批次",
+    "bestBefore": "此日期前最佳：{date}"
+  },
+  "newProduct": {
+    "title": "新增咖啡",
+    "step1Description": "第 1 步（共 2 步）：請輸入咖啡資料",
+    "addFirstBatch": "新增第一個批次",
+    "step2Description": "第 2 步（共 2 步）：新增你的第一批購入記錄",
+    "nextStep": "下一步：新增批次",
+    "addToInventory": "加入庫存"
+  },
+  "productDetail": {
+    "editProduct": "編輯產品",
+    "saveChanges": "儲存更改",
+    "addBatch": "新增批次",
+    "addNewBatch": "新增批次",
+    "batches": "批次",
+    "noBatches": "未有批次",
+    "editBrewsRemaining": "編輯剩餘杯數",
+    "brewsRemainingLabel": "剩餘杯數",
+    "deleteBatch": "刪除批次",
+    "deleteBatchConfirm": "此操作將永久刪除此批次及其所有飲用記錄。",
+    "deleteProduct": "刪除產品",
+    "deleteProductConfirm": "此操作將永久刪除「{name}」及其所有批次和飲用記錄。",
+    "productNotFound": "找不到產品",
+    "editQuantityAria": "編輯數量",
+    "deleteBatchAria": "刪除批次"
+  },
+  "preferences": {
+    "pageTitle": "設定",
+    "appearance": "外觀",
+    "flavorPreferences": "風味偏好",
+    "flavorDescription": "設定各風味維度在推薦時的重要程度。",
+    "weekday": "平日",
+    "weekend": "週末",
+    "language": "語言",
+    "saved": "設定已儲存。",
+    "saveFailed": "儲存失敗，請重試。",
+    "unsavedTitle": "有未儲存的變更",
+    "unsavedMessage": "你的風味偏好有未儲存的變更。如果你現在離開，這些變更將會遺失。",
+    "stay": "留在此頁",
+    "leave": "仍要離開"
+  },
+  "profileForm": {
+    "bitternessImportance": "苦度重要性",
+    "sournessImportance": "酸度重要性",
+    "richnessImportance": "濃郁度重要性",
+    "saveProfile": "儲存設定"
+  },
+  "recommend": {
+    "pageTitle": "推薦",
+    "noInventoryTitle": "庫存中未有咖啡",
+    "noInventoryDescription": "新增一些咖啡以獲取推薦",
+    "addCoffee": "新增咖啡",
+    "recommendedForYou": "為你推薦",
+    "noRecommendations": "目前沒有符合此心情的推薦。",
+    "ratingPrompt": "感覺點呀？（選填）",
+    "skip": "跳過",
+    "drink": "飲呢杯 ☕",
+    "showAnother": "換一杯",
+    "brewsRemaining": "剩餘 {count} 杯",
+    "bestBefore": "此日期前最佳：{date}",
+    "lightBright": "清爽明亮",
+    "lightBrightDesc": "柑橘清新風味",
+    "strongRich": "濃郁強勁",
+    "strongRichDesc": "飽滿醇厚",
+    "smoothBalanced": "順滑均衡",
+    "smoothBalancedDesc": "平衡圓潤",
+    "surpriseMe": "畀個驚喜我",
+    "surpriseMeDesc": "來點不一樣的"
+  },
+  "history": {
+    "pageTitle": "歷史",
+    "logCoffee": "記錄咖啡",
+    "logCoffeeAria": "記錄咖啡",
+    "logging": "記錄中…",
+    "product": "產品",
+    "batch": "批次",
+    "date": "日期",
+    "ratingOptional": "評分（選填）",
+    "selectProduct": "選擇產品",
+    "selectBatch": "選擇批次",
+    "noRating": "不評分",
+    "noCoffeeLogged": "今日未有記錄咖啡",
+    "batchBestBefore": "批次此日期前最佳：{date}"
+  },
+  "calendar": {
+    "sun": "日",
+    "mon": "一",
+    "tue": "二",
+    "wed": "三",
+    "thu": "四",
+    "fri": "五",
+    "sat": "六"
+  },
+  "pwa": {
+    "title": "將 Irekura 加至主畫面",
+    "iosHint": "點按分享圖示 ⎙，然後選擇「加至主畫面」",
+    "androidHint": "安裝以從主畫面快速存取",
+    "install": "安裝",
+    "dismiss": "關閉"
+  },
+  "starRating": {
+    "star": "{count} 星"
+  }
+}

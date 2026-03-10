@@ -10,6 +10,7 @@ import FilterBar, { DEFAULT_FILTERS, type FilterState } from "@/components/inven
 import { Button } from "@/components/ui/button";
 import { getDaysUntilExpiry, toISODateString } from "@/lib/utils";
 import type { Doc } from "@/convex/_generated/dataModel";
+import { useTranslations } from "next-intl";
 
 function InventorySkeleton() {
   return (
@@ -27,6 +28,7 @@ function InventorySkeleton() {
 
 export default function InventoryPage() {
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
+  const t = useTranslations("inventory");
 
   const products = useQuery(api.products.list);
   const allBatches = useQuery(api.batches.listActive);
@@ -99,14 +101,14 @@ export default function InventoryPage() {
     return (
       <div className="min-h-full flex flex-col items-center justify-center py-20 text-center px-4">
         <div className="text-4xl mb-4">☕</div>
-        <h2 className="text-lg font-semibold mb-1">No coffee yet</h2>
+        <h2 className="text-lg font-semibold mb-1">{t("emptyTitle")}</h2>
         <p className="text-muted-foreground text-sm mb-6">
-          Add your first coffee product to get started
+          {t("emptyDescription")}
         </p>
         <Button asChild>
           <Link href="/inventory/new">
             <Plus className="mr-2 h-4 w-4" />
-            Add Coffee
+            {t("addCoffee")}
           </Link>
         </Button>
       </div>
@@ -125,13 +127,13 @@ export default function InventoryPage() {
 
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center px-4">
-          <p className="text-muted-foreground text-sm">No coffees match the current filters.</p>
+          <p className="text-muted-foreground text-sm">{t("noResults")}</p>
           <button
             type="button"
             onClick={() => setFilters(DEFAULT_FILTERS)}
             className="mt-3 text-sm underline cursor-pointer text-foreground"
           >
-            Clear filters
+            {t("clearFilters")}
           </button>
         </div>
       ) : (
@@ -152,7 +154,7 @@ export default function InventoryPage() {
         size="icon"
         className="fixed right-4 h-14 w-14 rounded-full shadow-lg lg:bottom-6"
         style={{ bottom: "calc(5.5rem + env(safe-area-inset-bottom))" }}
-        aria-label="Add new coffee"
+        aria-label={t("addNewCoffeeAria")}
       >
         <Link href="/inventory/new">
           <Plus className="h-6 w-6" />

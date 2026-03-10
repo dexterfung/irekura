@@ -9,16 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import type { Doc } from "@/convex/_generated/dataModel";
+import { useTranslations } from "next-intl";
 
 type CoffeeType = "drip-bag" | "ground-bean" | "concentrate-capsule" | "instant-powder";
-
-const COFFEE_TYPES: { value: CoffeeType; label: string }[] = [
-  { value: "drip-bag", label: "Drip Bag" },
-  { value: "ground-bean", label: "Ground Bean" },
-  { value: "concentrate-capsule", label: "Capsule" },
-  { value: "instant-powder", label: "Instant" },
-];
 
 interface ProductFormValues {
   name: string;
@@ -127,6 +120,7 @@ function StarSelector({
   value: number;
   onChange: (v: number) => void;
 }) {
+  const tStar = useTranslations("starRating");
   return (
     <div className="space-y-1">
       <Label className="text-sm">{label}</Label>
@@ -140,7 +134,7 @@ function StarSelector({
               "text-2xl transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center cursor-pointer",
               star <= value ? "text-yellow-400" : "text-muted-foreground"
             )}
-            aria-label={`${star} star${star !== 1 ? "s" : ""}`}
+            aria-label={tStar("star", { count: star })}
           >
             ★
           </button>
@@ -153,13 +147,24 @@ function StarSelector({
 export default function ProductForm({
   defaultValues,
   onSubmit,
-  submitLabel = "Save",
+  submitLabel,
   isLoading = false,
 }: ProductFormProps) {
+  const t = useTranslations("productForm");
+  const tTypes = useTranslations("productTypes");
+  const tCommon = useTranslations("common");
+
+  const COFFEE_TYPES: { value: CoffeeType; label: string }[] = [
+    { value: "drip-bag", label: tTypes("drip-bag") },
+    { value: "ground-bean", label: tTypes("ground-bean") },
+    { value: "concentrate-capsule", label: tTypes("concentrate-capsule") },
+    { value: "instant-powder", label: tTypes("instant-powder") },
+  ];
+
   const [name, setName] = useState(defaultValues?.name ?? "");
   const [brand, setBrand] = useState(defaultValues?.brand ?? "");
 
-  const allProducts = useQuery(api.products.list) ?? [];
+  const allProducts = (useQuery(api.products.list) ?? []) as Array<{ name: string; brand: string }>;
   const nameSuggestions = [...new Set(allProducts.map((p) => p.name))];
   const brandSuggestions = [...new Set(allProducts.map((p) => p.brand))];
   const [type, setType] = useState<CoffeeType>(defaultValues?.type ?? "drip-bag");
@@ -176,33 +181,33 @@ export default function ProductForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="product-name">Name</Label>
+        <Label htmlFor="product-name">{t("name")}</Label>
         <AutocompleteInput
           id="product-name"
           value={name}
           onChange={setName}
           suggestions={nameSuggestions}
-          placeholder="e.g. Ethiopian Yirgacheffe"
+          placeholder={t("namePlaceholder")}
           required
           maxLength={100}
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="product-brand">Brand</Label>
+        <Label htmlFor="product-brand">{t("brand")}</Label>
         <AutocompleteInput
           id="product-brand"
           value={brand}
           onChange={setBrand}
           suggestions={brandSuggestions}
-          placeholder="e.g. Blue Bottle"
+          placeholder={t("brandPlaceholder")}
           required
           maxLength={100}
         />
       </div>
 
       <div className="space-y-2">
-        <Label>Type</Label>
+        <Label>{t("type")}</Label>
         <div className="grid grid-cols-2 gap-2">
           {COFFEE_TYPES.map(({ value, label }) => (
             <button
@@ -223,26 +228,26 @@ export default function ProductForm({
       </div>
 
       <div className="space-y-3">
-        <Label>Flavour Profile</Label>
-        <StarSelector label="Bitterness" value={bitterness} onChange={setBitterness} />
-        <StarSelector label="Sourness" value={sourness} onChange={setSourness} />
-        <StarSelector label="Richness" value={richness} onChange={setRichness} />
+        <Label>{t("flavorProfile")}</Label>
+        <StarSelector label={t("bitterness")} value={bitterness} onChange={setBitterness} />
+        <StarSelector label={t("sourness")} value={sourness} onChange={setSourness} />
+        <StarSelector label={t("richness")} value={richness} onChange={setRichness} />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="product-notes">Notes (optional)</Label>
+        <Label htmlFor="product-notes">{t("notes")}</Label>
         <Textarea
           id="product-notes"
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
-          placeholder="Any additional notes..."
+          placeholder={t("notesPlaceholder")}
           maxLength={500}
           rows={3}
         />
       </div>
 
       <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? "Saving..." : submitLabel}
+        {isLoading ? tCommon("saving") : (submitLabel ?? tCommon("save"))}
       </Button>
     </form>
   );

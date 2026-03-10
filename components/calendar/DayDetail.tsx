@@ -11,6 +11,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { format, parseISO } from "date-fns";
+import { useTranslations } from "next-intl";
 
 interface DayDetailEntry {
   log: Doc<"consumptionLogs">;
@@ -37,6 +38,7 @@ function StarRating({
   onRate: (id: Id<"consumptionLogs">, rating: number) => void;
 }) {
   const [hoverValue, setHoverValue] = useState<number | null>(null);
+  const tStar = useTranslations("starRating");
   const activeValue = hoverValue ?? value ?? 0;
 
   return (
@@ -51,7 +53,7 @@ function StarRating({
           onKeyDown={(e) => e.key === "Enter" && onRate(logId, star)}
           className="text-2xl px-0.5 cursor-pointer leading-none transition-colors"
           style={{ color: star <= activeValue ? STAR_YELLOW : STAR_GREY }}
-          aria-label={`Rate ${star} star${star !== 1 ? "s" : ""}`}
+          aria-label={tStar("star", { count: star })}
         >
           ★
         </span>
@@ -62,6 +64,7 @@ function StarRating({
 
 export default function DayDetail({ date, entries, onClose }: DayDetailProps) {
   const rateLog = useMutation(api.consumption.rate);
+  const t = useTranslations("history");
 
   async function handleRate(id: Id<"consumptionLogs">, rating: number) {
     await rateLog({ id, rating });
@@ -81,7 +84,7 @@ export default function DayDetail({ date, entries, onClose }: DayDetailProps) {
         <div className="mt-4 space-y-4">
           {entries.length === 0 ? (
             <p className="text-muted-foreground text-sm text-center py-4">
-              No coffee logged on this day
+              {t("noCoffeeLogged")}
             </p>
           ) : (
             entries.map(({ log, product, batch }) => (
@@ -91,10 +94,10 @@ export default function DayDetail({ date, entries, onClose }: DayDetailProps) {
                   <div className="text-sm text-muted-foreground">{product.brand}</div>
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  Batch best before: {batch?.bestBeforeDate ?? "—"}
+                  {t("batchBestBefore", { date: batch?.bestBeforeDate ?? "—" })}
                 </div>
                 <div className="space-y-1">
-                  <div className="text-xs text-muted-foreground">Rating</div>
+                  <div className="text-xs text-muted-foreground">{t("ratingOptional")}</div>
                   <StarRating
                     value={log.rating}
                     logId={log._id}

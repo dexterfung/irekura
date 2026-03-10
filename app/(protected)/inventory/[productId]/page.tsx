@@ -29,13 +29,7 @@ import ProductForm from "@/components/inventory/ProductForm";
 import { ChevronLeft, Plus, Pencil, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
-const TYPE_LABELS: Record<string, string> = {
-  "drip-bag": "Drip Bag",
-  "ground-bean": "Ground Bean",
-  "concentrate-capsule": "Capsule",
-  "instant-powder": "Instant",
-};
+import { useTranslations } from "next-intl";
 
 function StarDisplay({ value, label }: { value: number; label: string }) {
   return (
@@ -59,6 +53,10 @@ export default function ProductDetailPage() {
   const { productId } = useParams();
   const router = useRouter();
   const pid = productId as Id<"products">;
+  const t = useTranslations("productDetail");
+  const tCommon = useTranslations("common");
+  const tForm = useTranslations("productForm");
+  const tTypes = useTranslations("productTypes");
 
   const products = useQuery(api.products.list);
   const batches = useQuery(api.batches.listByProduct, { productId: pid });
@@ -90,9 +88,9 @@ export default function ProductDetailPage() {
   if (!product) {
     return (
       <div className="p-4 text-center">
-        <p className="text-muted-foreground">Product not found</p>
+        <p className="text-muted-foreground">{t("productNotFound")}</p>
         <Button variant="link" onClick={() => router.push("/inventory")}>
-          Back to inventory
+          {tCommon("backToInventory")}
         </Button>
       </div>
     );
@@ -172,13 +170,13 @@ export default function ProductDetailPage() {
             </SheetTrigger>
             <SheetContent side="bottom" className="max-h-[90vh] overflow-y-auto">
               <SheetHeader>
-                <SheetTitle>Edit Product</SheetTitle>
+                <SheetTitle>{t("editProduct")}</SheetTitle>
               </SheetHeader>
               <div className="mt-4">
                 <ProductForm
                   defaultValues={product}
                   onSubmit={handleUpdateProduct}
-                  submitLabel="Save Changes"
+                  submitLabel={t("saveChanges")}
                   isLoading={isLoading}
                 />
               </div>
@@ -199,11 +197,13 @@ export default function ProductDetailPage() {
         {/* Product info */}
         <div className="space-y-2">
           <div className="text-muted-foreground">{product.brand}</div>
-          <Badge variant="secondary">{TYPE_LABELS[product.type]}</Badge>
+          <Badge variant="secondary">
+            {tTypes(product.type as "drip-bag" | "ground-bean" | "concentrate-capsule" | "instant-powder")}
+          </Badge>
           <div className="flex gap-6 mt-3">
-            <StarDisplay value={product.bitterness} label="Bitterness" />
-            <StarDisplay value={product.sourness} label="Sourness" />
-            <StarDisplay value={product.richness} label="Richness" />
+            <StarDisplay value={product.bitterness} label={tForm("bitterness")} />
+            <StarDisplay value={product.sourness} label={tForm("sourness")} />
+            <StarDisplay value={product.richness} label={tForm("richness")} />
           </div>
           {product.notes && (
             <p className="text-sm text-muted-foreground mt-2">{product.notes}</p>
@@ -215,22 +215,22 @@ export default function ProductDetailPage() {
         {/* Batches */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <h2 className="font-semibold">Batches</h2>
+            <h2 className="font-semibold">{t("batches")}</h2>
             <Sheet open={addBatchOpen} onOpenChange={setAddBatchOpen}>
               <SheetTrigger asChild>
                 <Button variant="outline" size="sm">
                   <Plus className="h-4 w-4 mr-1" />
-                  Add Batch
+                  {t("addBatch")}
                 </Button>
               </SheetTrigger>
               <SheetContent side="bottom">
                 <SheetHeader>
-                  <SheetTitle>Add New Batch</SheetTitle>
+                  <SheetTitle>{t("addNewBatch")}</SheetTitle>
                 </SheetHeader>
                 <div className="mt-4">
                   <BatchForm
                     onSubmit={handleAddBatch}
-                    submitLabel="Add Batch"
+                    submitLabel={t("addBatch")}
                     isLoading={isLoading}
                   />
                 </div>
@@ -239,7 +239,7 @@ export default function ProductDetailPage() {
           </div>
 
           {batches.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-4 text-center">No batches yet</p>
+            <p className="text-sm text-muted-foreground py-4 text-center">{t("noBatches")}</p>
           ) : (
             <div className="divide-y">
               {(batches as Doc<"batches">[]).map((batch) => (
@@ -261,10 +261,10 @@ export default function ProductDetailPage() {
       <Dialog open={!!editingBatch} onOpenChange={(open) => !open && setEditingBatch(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit Brews Remaining</DialogTitle>
+            <DialogTitle>{t("editBrewsRemaining")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-2">
-            <Label htmlFor="edit-qty">Brews Remaining</Label>
+            <Label htmlFor="edit-qty">{t("brewsRemainingLabel")}</Label>
             <Input
               id="edit-qty"
               type="number"
@@ -277,10 +277,10 @@ export default function ProductDetailPage() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditingBatch(null)}>
-              Cancel
+              {tCommon("cancel")}
             </Button>
             <Button onClick={handleUpdateBatchQty} disabled={isLoading}>
-              Save
+              {tCommon("save")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -293,21 +293,21 @@ export default function ProductDetailPage() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Batch</DialogTitle>
+            <DialogTitle>{t("deleteBatch")}</DialogTitle>
             <DialogDescription>
-              This will permanently delete the batch and all its consumption logs.
+              {t("deleteBatchConfirm")}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeletingBatchId(null)}>
-              Cancel
+              {tCommon("cancel")}
             </Button>
             <Button
               variant="destructive"
               onClick={() => deletingBatchId && handleDeleteBatch(deletingBatchId)}
               disabled={isLoading}
             >
-              Delete
+              {tCommon("delete")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -317,17 +317,17 @@ export default function ProductDetailPage() {
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Product</DialogTitle>
+            <DialogTitle>{t("deleteProduct")}</DialogTitle>
             <DialogDescription>
-              This will permanently delete &quot;{product.name}&quot; and all its batches and consumption history.
+              {t("deleteProductConfirm", { name: product.name })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-              Cancel
+              {tCommon("cancel")}
             </Button>
             <Button variant="destructive" onClick={handleDeleteProduct} disabled={isLoading}>
-              Delete
+              {tCommon("delete")}
             </Button>
           </DialogFooter>
         </DialogContent>

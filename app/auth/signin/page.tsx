@@ -1,4 +1,5 @@
 import { signIn } from "@/lib/auth";
+import { getTranslations } from "next-intl/server";
 
 export default async function SignInPage({
   searchParams,
@@ -6,26 +7,27 @@ export default async function SignInPage({
   searchParams: Promise<{ error?: string }>;
 }) {
   const { error } = await searchParams;
+  const t = await getTranslations("auth");
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm space-y-8">
         <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight">Irekura</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
           <p className="text-muted-foreground text-sm">
-            Your personal coffee inventory manager
+            {t("subtitle")}
           </p>
         </div>
 
         {error && (
           <p className="text-sm text-destructive text-center">
-            Sign in failed. Please try again.
+            {t("signInFailed")}
           </p>
         )}
 
         <div className="space-y-4">
           <div className="text-center text-xs text-muted-foreground">
-            Track your coffee collection and get smart daily recommendations
+            {t("description")}
           </div>
 
           <form
@@ -56,7 +58,7 @@ export default async function SignInPage({
                   fill="#EA4335"
                 />
               </svg>
-              Continue with Google
+              {t("signInWithGoogle")}
             </button>
           </form>
         </div>

@@ -20,6 +20,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus } from "lucide-react";
 import { toISODateString } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 export default function HistoryPage() {
   const now = new Date();
@@ -28,6 +29,8 @@ export default function HistoryPage() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [weekRef, setWeekRef] = useState(toISODateString(now));
   const [logDialogOpen, setLogDialogOpen] = useState(false);
+  const t = useTranslations("history");
+  const tCommon = useTranslations("common");
 
   // Quick-log form state
   const [logProductId, setLogProductId] = useState("");
@@ -111,7 +114,7 @@ export default function HistoryPage() {
         className="fixed right-4 h-14 w-14 rounded-full shadow-lg"
         style={{ bottom: "calc(5.5rem + env(safe-area-inset-bottom))" }}
         onClick={() => setLogDialogOpen(true)}
-        aria-label="Log coffee"
+        aria-label={t("logCoffeeAria")}
       >
         <Plus className="h-6 w-6" />
       </Button>
@@ -120,14 +123,14 @@ export default function HistoryPage() {
       <Dialog open={logDialogOpen} onOpenChange={setLogDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Log Coffee</DialogTitle>
+            <DialogTitle>{t("logCoffee")}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleQuickLog} className="space-y-4">
             <div className="space-y-2">
-              <Label>Product</Label>
+              <Label>{t("product")}</Label>
               <Select value={logProductId} onValueChange={setLogProductId}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select product" />
+                  <SelectValue placeholder={t("selectProduct")} />
                 </SelectTrigger>
                 <SelectContent>
                   {(products as Array<{ _id: string; name: string; brand: string }>)?.map((p) => (
@@ -140,14 +143,14 @@ export default function HistoryPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Batch</Label>
+              <Label>{t("batch")}</Label>
               <Select
                 value={logBatchId}
                 onValueChange={setLogBatchId}
                 disabled={!logProductId}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select batch" />
+                  <SelectValue placeholder={t("selectBatch")} />
                 </SelectTrigger>
                 <SelectContent>
                   {(batches as Array<{ _id: string; brewsRemaining: number; bestBeforeDate: string }>)?.map((b) => (
@@ -160,7 +163,7 @@ export default function HistoryPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="log-date">Date</Label>
+              <Label htmlFor="log-date">{t("date")}</Label>
               <Input
                 id="log-date"
                 type="date"
@@ -172,10 +175,10 @@ export default function HistoryPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="log-rating">Rating (optional)</Label>
+              <Label htmlFor="log-rating">{t("ratingOptional")}</Label>
               <Select value={logRating} onValueChange={setLogRating}>
                 <SelectTrigger>
-                  <SelectValue placeholder="No rating" />
+                  <SelectValue placeholder={t("noRating")} />
                 </SelectTrigger>
                 <SelectContent>
                   {[1, 2, 3, 4, 5].map((r) => (
@@ -189,10 +192,10 @@ export default function HistoryPage() {
 
             <DialogFooter>
               <Button variant="outline" type="button" onClick={() => setLogDialogOpen(false)}>
-                Cancel
+                {tCommon("cancel")}
               </Button>
               <Button type="submit" disabled={isLogging || !logProductId || !logBatchId}>
-                {isLogging ? "Logging..." : "Log Coffee"}
+                {isLogging ? t("logging") : t("logCoffee")}
               </Button>
             </DialogFooter>
           </form>

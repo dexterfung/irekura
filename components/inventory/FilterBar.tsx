@@ -11,6 +11,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 interface FilterOption {
   value: string;
@@ -61,7 +62,7 @@ function FilterPill({
             : "bg-background border-border hover:bg-accent"
         )}
       >
-        {isActive ? currentLabel : `${label}: All`}
+        {isActive ? currentLabel : `${label}: ${currentLabel}`}
         <ChevronDown
           className={cn("h-3.5 w-3.5 transition-transform shrink-0", open && "rotate-180")}
         />
@@ -104,29 +105,6 @@ function FilterPill({
     </div>
   );
 }
-
-// ─── Shared option data ───────────────────────────────────────────────────────
-
-export const TYPE_OPTIONS: FilterOption[] = [
-  { value: "all", label: "All Types" },
-  { value: "drip-bag", label: "Drip Bag" },
-  { value: "ground-bean", label: "Ground Bean" },
-  { value: "concentrate-capsule", label: "Capsule" },
-  { value: "instant-powder", label: "Instant" },
-];
-
-export const STATUS_OPTIONS: FilterOption[] = [
-  { value: "all", label: "All" },
-  { value: "active", label: "Active" },
-  { value: "expiring", label: "Expiring Soon" },
-  { value: "expired", label: "Expired" },
-];
-
-export const SORT_OPTIONS: FilterOption[] = [
-  { value: "name", label: "Name (A→Z)" },
-  { value: "brews", label: "Brews Remaining" },
-  { value: "bestBefore", label: "Best Before" },
-];
 
 // ─── Mobile sheet section ────────────────────────────────────────────────────
 
@@ -201,6 +179,10 @@ export default function FilterBar({
   resultCount,
   totalCount,
 }: FilterBarProps) {
+  const t = useTranslations("filters");
+  const tTypes = useTranslations("productTypes");
+  const tCommon = useTranslations("common");
+
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
   const [sortSheetOpen, setSortSheetOpen] = useState(false);
 
@@ -208,8 +190,29 @@ export default function FilterBar({
     onChange({ ...filters, [key]: value });
   }
 
+  const TYPE_OPTIONS: FilterOption[] = [
+    { value: "all", label: t("allTypes") },
+    { value: "drip-bag", label: tTypes("drip-bag") },
+    { value: "ground-bean", label: tTypes("ground-bean") },
+    { value: "concentrate-capsule", label: tTypes("concentrate-capsule") },
+    { value: "instant-powder", label: tTypes("instant-powder") },
+  ];
+
+  const STATUS_OPTIONS: FilterOption[] = [
+    { value: "all", label: t("allStatuses") },
+    { value: "active", label: t("active") },
+    { value: "expiring", label: t("expiringSoon") },
+    { value: "expired", label: t("expired") },
+  ];
+
+  const SORT_OPTIONS: FilterOption[] = [
+    { value: "name", label: t("sortName") },
+    { value: "brews", label: t("sortBrews") },
+    { value: "bestBefore", label: t("sortBestBefore") },
+  ];
+
   const brandOptions: FilterOption[] = [
-    { value: "all", label: "All Brands" },
+    { value: "all", label: t("allBrands") },
     ...brands.map((b) => ({ value: b, label: b })),
   ];
 
@@ -218,7 +221,7 @@ export default function FilterBar({
   ).length;
 
   const hasActiveFilters = activeFilterCount > 0;
-  const currentSortLabel = SORT_OPTIONS.find((o) => o.value === filters.sort)?.label ?? "Sort";
+  const currentSortLabel = SORT_OPTIONS.find((o) => o.value === filters.sort)?.label ?? t("sort");
 
   return (
     <>
@@ -226,28 +229,28 @@ export default function FilterBar({
       <div className="hidden lg:block px-4 py-2 border-b border-border">
         <div className="flex items-center gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pb-0.5">
           <FilterPill
-            label="Type"
+            label={t("type")}
             value={filters.type}
             options={TYPE_OPTIONS}
             onChange={(v) => update("type", v)}
             isActive={filters.type !== "all"}
           />
           <FilterPill
-            label="Status"
+            label={t("status")}
             value={filters.status}
             options={STATUS_OPTIONS}
             onChange={(v) => update("status", v)}
             isActive={filters.status !== "all"}
           />
           <FilterPill
-            label="Brand"
+            label={t("brand")}
             value={filters.brand}
             options={brandOptions}
             onChange={(v) => update("brand", v)}
             isActive={filters.brand !== "all"}
           />
           <FilterPill
-            label="Sort"
+            label={t("sort")}
             value={filters.sort}
             options={SORT_OPTIONS}
             onChange={(v) => update("sort", v)}
@@ -255,8 +258,8 @@ export default function FilterBar({
           />
           <span className="ml-auto shrink-0 text-xs text-muted-foreground whitespace-nowrap pl-2">
             {hasActiveFilters
-              ? `${resultCount} of ${totalCount}`
-              : `${totalCount} coffee${totalCount !== 1 ? "s" : ""}`}
+              ? t("filteredCount", { filtered: resultCount, total: totalCount })
+              : t("coffeeCount", { count: totalCount })}
           </span>
         </div>
       </div>
@@ -274,7 +277,7 @@ export default function FilterBar({
           )}
         >
           <SlidersHorizontal className="h-3.5 w-3.5" />
-          Filters
+          {t("filtersTitle")}
           {activeFilterCount > 0 && (
             <span className="ml-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-background text-foreground text-[10px] font-bold">
               {activeFilterCount}
@@ -293,8 +296,8 @@ export default function FilterBar({
 
         <span className="ml-auto text-xs text-muted-foreground whitespace-nowrap">
           {hasActiveFilters
-            ? `${resultCount} of ${totalCount}`
-            : `${totalCount} coffee${totalCount !== 1 ? "s" : ""}`}
+            ? t("filteredCount", { filtered: resultCount, total: totalCount })
+            : t("coffeeCount", { count: totalCount })}
         </span>
       </div>
 
@@ -302,24 +305,24 @@ export default function FilterBar({
       <Sheet open={filterSheetOpen} onOpenChange={setFilterSheetOpen}>
         <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto">
           <SheetHeader className="mb-4">
-            <SheetTitle>Filters</SheetTitle>
+            <SheetTitle>{t("filtersTitle")}</SheetTitle>
           </SheetHeader>
 
           <div className="space-y-5">
             <SheetSection
-              title="Type"
+              title={t("type")}
               options={TYPE_OPTIONS}
               value={filters.type}
               onChange={(v) => update("type", v)}
             />
             <SheetSection
-              title="Status"
+              title={t("status")}
               options={STATUS_OPTIONS}
               value={filters.status}
               onChange={(v) => update("status", v)}
             />
             <SheetSection
-              title="Brand"
+              title={t("brand")}
               options={brandOptions}
               value={filters.brand}
               onChange={(v) => update("brand", v)}
@@ -336,11 +339,11 @@ export default function FilterBar({
                   setFilterSheetOpen(false);
                 }}
               >
-                Clear all
+                {tCommon("clearAll")}
               </Button>
             )}
             <Button className="flex-1" onClick={() => setFilterSheetOpen(false)}>
-              Done
+              {tCommon("done")}
             </Button>
           </div>
         </SheetContent>
@@ -350,7 +353,7 @@ export default function FilterBar({
       <Sheet open={sortSheetOpen} onOpenChange={setSortSheetOpen}>
         <SheetContent side="bottom">
           <SheetHeader className="mb-4">
-            <SheetTitle>Sort by</SheetTitle>
+            <SheetTitle>{t("sortByTitle")}</SheetTitle>
           </SheetHeader>
 
           <SheetSection

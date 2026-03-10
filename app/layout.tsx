@@ -6,6 +6,8 @@ import ConvexClientProvider from "@/components/ConvexClientProvider";
 import ThemeSync from "@/components/ThemeSync";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import { auth } from "@/lib/auth";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -34,6 +36,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
+  const messages = await getMessages();
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -43,12 +46,14 @@ export default async function RootLayout({
       </head>
       <body suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <ConvexClientProvider session={session}>
-            <ThemeSync />
-            <PWAInstallPrompt />
-            <NextTopLoader color="#a16207" height={3} showSpinner={false} />
-            {children}
-          </ConvexClientProvider>
+          <NextIntlClientProvider messages={messages}>
+            <ConvexClientProvider session={session}>
+              <ThemeSync />
+              <PWAInstallPrompt />
+              <NextTopLoader color="#a16207" height={3} showSpinner={false} />
+              {children}
+            </ConvexClientProvider>
+          </NextIntlClientProvider>
         </ThemeProvider>
       </body>
     </html>

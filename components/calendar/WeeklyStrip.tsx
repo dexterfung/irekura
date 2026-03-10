@@ -11,6 +11,7 @@ import {
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface WeeklyStripProps {
   referenceDate: string; // "YYYY-MM-DD" — any date within the week to display
@@ -20,8 +21,6 @@ interface WeeklyStripProps {
   onNavigate: (newReferenceDate: string) => void;
 }
 
-const DAY_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
-
 export default function WeeklyStrip({
   referenceDate,
   datesWithEntries,
@@ -29,6 +28,19 @@ export default function WeeklyStrip({
   onSelectDate,
   onNavigate,
 }: WeeklyStripProps) {
+  const t = useTranslations("calendar");
+  const tCommon = useTranslations("common");
+
+  const DAY_LABELS = [
+    t("sun"),
+    t("mon"),
+    t("tue"),
+    t("wed"),
+    t("thu"),
+    t("fri"),
+    t("sat"),
+  ];
+
   const ref = parseISO(referenceDate);
   const weekStart = startOfWeek(ref);
   const todayISO = format(new Date(), "yyyy-MM-dd");
@@ -67,7 +79,7 @@ export default function WeeklyStrip({
           </Button>
         </div>
         <Button variant="outline" size="sm" onClick={handleToday}>
-          Today
+          {tCommon("today")}
         </Button>
       </div>
 

@@ -1,8 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getDaysUntilExpiry, toISODateString } from "@/lib/utils";
 import type { Doc } from "@/convex/_generated/dataModel";
+import { useTranslations } from "next-intl";
 
 interface ProductCardProps {
   product: Doc<"products">;
@@ -10,14 +13,10 @@ interface ProductCardProps {
   href: string;
 }
 
-const TYPE_LABELS: Record<string, string> = {
-  "drip-bag": "Drip Bag",
-  "ground-bean": "Ground Bean",
-  "concentrate-capsule": "Capsule",
-  "instant-powder": "Instant",
-};
-
 export default function ProductCard({ product, batches, href }: ProductCardProps) {
+  const t = useTranslations("inventory");
+  const tTypes = useTranslations("productTypes");
+
   const today = toISODateString(new Date());
   const activeBatches = batches.filter((b) => b.brewsRemaining > 0);
   const totalBrews = activeBatches.reduce((sum, b) => sum + b.brewsRemaining, 0);
@@ -48,27 +47,26 @@ export default function ProductCard({ product, batches, href }: ProductCardProps
             <div className="font-semibold text-base truncate">{product.name}</div>
             <div className="text-sm text-muted-foreground truncate">{product.brand}</div>
           </div>
-          <Badge variant="secondary" className="shrink-0">
-            {TYPE_LABELS[product.type] ?? product.type}
+          <Badge variant="secondary">
+            {tTypes(product.type as "drip-bag" | "ground-bean" | "concentrate-capsule" | "instant-powder")}
           </Badge>
         </div>
       </CardHeader>
       <CardContent className="pt-0">
         <div className="flex items-center justify-between">
           <div className="text-sm">
-            <span className="font-medium">{totalBrews}</span>
-            <span className="text-muted-foreground ml-1">brews remaining</span>
+            {t("brewsRemaining", { count: totalBrews })}
           </div>
           <div className="flex gap-1">
-            {hasExpired && <Badge variant="expired">Expired</Badge>}
+            {hasExpired && <Badge variant="expired">{t("expired")}</Badge>}
             {!hasExpired && hasExpiringSoon && (
-              <Badge variant="warning">Expiring soon</Badge>
+              <Badge variant="warning">{t("expiringSoon")}</Badge>
             )}
           </div>
         </div>
         {earliestExpiry && (
           <div className="text-xs text-muted-foreground mt-1">
-            Earliest best before: {earliestExpiry}
+            {t("earliestBestBefore", { date: earliestExpiry })}
           </div>
         )}
       </CardContent>

@@ -23,9 +23,11 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { useTranslations } from "next-intl";
 
 function RatingStars({ onRate }: { onRate: (rating: number) => void }) {
   const [hoverValue, setHoverValue] = useState<number | null>(null);
+  const tStar = useTranslations("starRating");
   return (
     <div className="flex justify-center gap-1 py-4" onMouseLeave={() => setHoverValue(null)}>
       {[1, 2, 3, 4, 5].map((star) => (
@@ -36,7 +38,7 @@ function RatingStars({ onRate }: { onRate: (rating: number) => void }) {
           onMouseEnter={() => setHoverValue(star)}
           className="text-4xl cursor-pointer transition-colors min-w-[44px] min-h-[44px]"
           style={{ color: star <= (hoverValue ?? 0) ? "#facc15" : "var(--color-muted-foreground, #9ca3af)" }}
-          aria-label={`${star} star${star !== 1 ? "s" : ""}`}
+          aria-label={tStar("star", { count: star })}
         >
           ★
         </button>
@@ -50,6 +52,7 @@ export default function RecommendPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [ratingDialogOpen, setRatingDialogOpen] = useState(false);
   const [pendingLogId, setPendingLogId] = useState<Id<"consumptionLogs"> | null>(null);
+  const t = useTranslations("recommend");
 
   const activeBatches = useQuery(api.batches.listActive);
   const recentProductIds = useQuery(api.consumption.listRecent, { limit: 10 });
@@ -127,12 +130,12 @@ export default function RecommendPage() {
     return (
       <div className="min-h-full flex flex-col items-center justify-center p-4 text-center">
         <div className="text-4xl mb-4">☕</div>
-        <h2 className="text-lg font-semibold mb-1">No coffee in inventory</h2>
+        <h2 className="text-lg font-semibold mb-1">{t("noInventoryTitle")}</h2>
         <p className="text-muted-foreground text-sm mb-6">
-          Add some coffee to get recommendations
+          {t("noInventoryDescription")}
         </p>
         <Button asChild>
-          <Link href="/inventory/new">Add Coffee</Link>
+          <Link href="/inventory/new">{t("addCoffee")}</Link>
         </Button>
       </div>
     );
@@ -152,7 +155,7 @@ export default function RecommendPage() {
         {selectedMood && recommendation && (
           <div>
             <h2 className="text-sm font-medium text-muted-foreground mb-3">
-              Recommended for you
+              {t("recommendedForYou")}
             </h2>
             <RecommendationCard
               recommendation={recommendation}
@@ -165,7 +168,7 @@ export default function RecommendPage() {
 
         {selectedMood && ranked.length === 0 && (
           <div className="text-center py-8 text-muted-foreground">
-            <p>No recommendations available for this mood.</p>
+            <p>{t("noRecommendations")}</p>
           </div>
         )}
       </div>
@@ -174,7 +177,7 @@ export default function RecommendPage() {
       <Dialog open={ratingDialogOpen} onOpenChange={setRatingDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>How was it? (optional)</DialogTitle>
+            <DialogTitle>{t("ratingPrompt")}</DialogTitle>
           </DialogHeader>
           <RatingStars onRate={handleRate} />
           <DialogFooter>
@@ -185,7 +188,7 @@ export default function RecommendPage() {
                 setPendingLogId(null);
               }}
             >
-              Skip
+              {t("skip")}
             </Button>
           </DialogFooter>
         </DialogContent>

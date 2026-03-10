@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useTransition } from "react";
 import { useTheme } from "next-themes";
 import { signOut, useSession } from "next-auth/react";
 import { useQuery, useMutation } from "convex/react";
@@ -17,6 +17,8 @@ import {
 import { Button } from "@/components/ui/button";
 import ProfileForm from "@/components/preferences/ProfileForm";
 import type { FlavorProfile } from "@/lib/recommendations/engine";
+import { useTranslations, useLocale } from "next-intl";
+import { setLocale } from "@/app/actions/locale";
 
 export default function PreferencesPage() {
   const [isSaving, setIsSaving] = useState(false);
@@ -24,8 +26,12 @@ export default function PreferencesPage() {
   const [isDirty, setIsDirty] = useState(false);
   const [pendingHref, setPendingHref] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const { data: session } = useSession();
   const { theme, setTheme } = useTheme();
+  const t = useTranslations("preferences");
+  const tCommon = useTranslations("common");
+  const currentLocale = useLocale();
 
   useEffect(() => setMounted(true), []);
   const saveTheme = useMutation(api.settings.setTheme);
@@ -111,13 +117,13 @@ export default function PreferencesPage() {
             onClick={() => { setTheme("system"); void signOut({ callbackUrl: "/auth/signin" }); }}
             className="shrink-0 rounded-lg border border-border px-3 py-2 text-sm font-medium text-destructive hover:bg-accent transition-colors"
           >
-            Sign out
+            {tCommon("signOut")}
           </button>
         </div>
 
         {/* Appearance */}
         <div className="mb-6">
-          <p className="text-sm font-medium mb-2">Appearance</p>
+          <p className="text-sm font-medium mb-2">{t("appearance")}</p>
           <div className="grid grid-cols-3 gap-2">
             {(["system", "light", "dark"] as const).map((option) => (
               <button
@@ -129,21 +135,42 @@ export default function PreferencesPage() {
                     : "border-border hover:bg-accent"
                 }`}
               >
-                {option === "system" ? "System" : option === "light" ? "Light" : "Dark"}
+                {option === "system" ? tCommon("system") : option === "light" ? tCommon("light") : tCommon("dark")}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Language */}
+        <div className="mb-6">
+          <p className="text-sm font-medium mb-2">{t("language")}</p>
+          <div className="grid grid-cols-2 gap-2">
+            {(["en", "zh-HK"] as const).map((loc) => (
+              <button
+                key={loc}
+                onClick={() => startTransition(async () => { await setLocale(loc); window.location.reload(); })}
+                disabled={isPending}
+                className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors cursor-pointer ${
+                  currentLocale === loc
+                    ? "border-foreground bg-foreground text-background"
+                    : "border-border hover:bg-accent"
+                }`}
+              >
+                {loc === "en" ? "English" : "繁體中文"}
               </button>
             ))}
           </div>
         </div>
 
         {/* Flavour preferences */}
-        <p className="text-sm font-medium mb-2">Flavour Preferences</p>
+        <p className="text-sm font-medium mb-2">{t("flavorPreferences")}</p>
         <p className="text-sm text-muted-foreground mb-4">
-          Set how much each flavour dimension matters when getting recommendations.
+          {t("flavorDescription")}
         </p>
 
         {saveStatus && (
           <Toast
-            message={saveStatus === "success" ? "Preferences saved." : "Failed to save. Please try again."}
+            message={saveStatus === "success" ? t("saved") : t("saveFailed")}
             type={saveStatus}
             onDismiss={() => setSaveStatus(null)}
           />
@@ -158,10 +185,10 @@ export default function PreferencesPage() {
           <Tabs defaultValue="weekday">
             <TabsList className="w-full">
               <TabsTrigger value="weekday" className="flex-1">
-                Weekday
+                {t("weekday")}
               </TabsTrigger>
               <TabsTrigger value="weekend" className="flex-1">
-                Weekend
+                {t("weekend")}
               </TabsTrigger>
             </TabsList>
 
@@ -205,14 +232,14 @@ export default function PreferencesPage() {
       <Dialog open={!!pendingHref} onOpenChange={() => setPendingHref(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Unsaved changes</DialogTitle>
+            <DialogTitle>{t("unsavedTitle")}</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            You have unsaved flavour preference changes. If you leave now they will be lost.
+            {t("unsavedMessage")}
           </p>
           <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => setPendingHref(null)}>
-              Stay
+              {t("stay")}
             </Button>
             <Button
               variant="destructive"
@@ -227,7 +254,7 @@ export default function PreferencesPage() {
                 }
               }}
             >
-              Leave anyway
+              {t("leave")}
             </Button>
           </DialogFooter>
         </DialogContent>

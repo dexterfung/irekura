@@ -8,6 +8,7 @@ import ProductForm from "@/components/inventory/ProductForm";
 import BatchForm from "@/components/inventory/BatchForm";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function NewProductPage() {
   const router = useRouter();
@@ -18,6 +19,7 @@ export default function NewProductPage() {
   const [productData, setProductData] = useState<Parameters<typeof createProduct>[0] | null>(
     null
   );
+  const t = useTranslations("newProduct");
 
   async function handleProductSubmit(values: Parameters<typeof createProduct>[0]) {
     setProductData(values);
@@ -56,7 +58,7 @@ export default function NewProductPage() {
           <ChevronLeft className="h-5 w-5" />
         </Button>
         <h1 className="text-xl font-bold">
-          {step === "product" ? "Add Coffee" : "Add First Batch"}
+          {step === "product" ? t("title") : t("addFirstBatch")}
         </h1>
       </header>
 
@@ -64,22 +66,22 @@ export default function NewProductPage() {
         {step === "product" ? (
           <>
             <p className="text-sm text-muted-foreground mb-4">
-              Step 1 of 2: Tell us about this coffee
+              {t("step1Description")}
             </p>
             <ProductForm
               defaultValues={productData ?? undefined}
               onSubmit={handleProductSubmit}
-              submitLabel="Next: Add Batch"
+              submitLabel={t("nextStep")}
             />
           </>
         ) : (
           <>
             <p className="text-sm text-muted-foreground mb-4">
-              Step 2 of 2: Add your first purchase batch
+              {t("step2Description")}
             </p>
             <BatchForm
               onSubmit={handleBatchSubmit}
-              submitLabel="Add to Inventory"
+              submitLabel={t("addToInventory")}
               isLoading={isLoading}
             />
           </>

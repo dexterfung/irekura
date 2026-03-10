@@ -5,6 +5,7 @@ import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import type { FlavorProfile } from "@/lib/recommendations/engine";
+import { useTranslations } from "next-intl";
 
 interface ProfileFormProps {
   defaultValues?: FlavorProfile;
@@ -19,6 +20,9 @@ export default function ProfileForm({
   onDirtyChange,
   isLoading = false,
 }: ProfileFormProps) {
+  const t = useTranslations("profileForm");
+  const tCommon = useTranslations("common");
+
   const [bitterness, setBitterness] = useState(defaultValues.bitterness);
   const [sourness, setSourness] = useState(defaultValues.sourness);
   const [richness, setRichness] = useState(defaultValues.richness);
@@ -43,7 +47,7 @@ export default function ProfileForm({
       <div className="space-y-4">
         <div className="space-y-3">
           <div className="flex justify-between items-center">
-            <Label>Bitterness Importance</Label>
+            <Label>{t("bitternessImportance")}</Label>
             <span className="text-sm font-medium tabular-nums">{bitterness}/5</span>
           </div>
           <Slider
@@ -58,7 +62,7 @@ export default function ProfileForm({
 
         <div className="space-y-3">
           <div className="flex justify-between items-center">
-            <Label>Sourness Importance</Label>
+            <Label>{t("sournessImportance")}</Label>
             <span className="text-sm font-medium tabular-nums">{sourness}/5</span>
           </div>
           <Slider
@@ -73,7 +77,7 @@ export default function ProfileForm({
 
         <div className="space-y-3">
           <div className="flex justify-between items-center">
-            <Label>Richness Importance</Label>
+            <Label>{t("richnessImportance")}</Label>
             <span className="text-sm font-medium tabular-nums">{richness}/5</span>
           </div>
           <Slider
@@ -87,7 +91,7 @@ export default function ProfileForm({
         </div>
       </div>
       <Button onClick={handleSave} disabled={isLoading} className="w-full">
-        {isLoading ? "Saving..." : "Save Profile"}
+        {isLoading ? tCommon("saving") : t("saveProfile")}
       </Button>
     </div>
   );
