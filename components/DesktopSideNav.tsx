@@ -8,6 +8,7 @@ import { useTheme } from "next-themes";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
 
 const navItems = [
   { href: "/inventory", label: "My Coffee", icon: Package },
@@ -27,6 +28,8 @@ export default function DesktopSideNav() {
   const { data: session } = useSession();
   const { theme, setTheme } = useTheme();
   const saveTheme = useMutation(api.settings.setTheme);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   return (
     <nav className="hidden lg:flex fixed left-0 top-0 bottom-0 w-56 z-50 border-r border-border bg-background flex-col py-6 px-3">
@@ -59,7 +62,7 @@ export default function DesktopSideNav() {
             onClick={() => { setTheme(value); void saveTheme({ theme: value }); }}
             className={cn(
               "flex-1 flex items-center justify-center py-1.5 rounded-md transition-colors cursor-pointer group relative",
-              theme === value
+              mounted && theme === value
                 ? "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400"
                 : "text-muted-foreground hover:bg-accent hover:text-foreground"
             )}

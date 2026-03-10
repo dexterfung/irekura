@@ -1,21 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import FlavorRadarChart from "./FlavorRadarChart";
 import type { FlavorProfile } from "@/lib/recommendations/engine";
 
 interface ProfileFormProps {
   defaultValues?: FlavorProfile;
   onSave: (profile: FlavorProfile) => void;
+  onDirtyChange?: (isDirty: boolean) => void;
   isLoading?: boolean;
 }
 
 export default function ProfileForm({
   defaultValues = { bitterness: 3, sourness: 3, richness: 3 },
   onSave,
+  onDirtyChange,
   isLoading = false,
 }: ProfileFormProps) {
   const [bitterness, setBitterness] = useState(defaultValues.bitterness);
@@ -24,14 +25,21 @@ export default function ProfileForm({
 
   const profile: FlavorProfile = { bitterness, sourness, richness };
 
+  const isDirty =
+    bitterness !== defaultValues.bitterness ||
+    sourness !== defaultValues.sourness ||
+    richness !== defaultValues.richness;
+
+  useEffect(() => {
+    onDirtyChange?.(isDirty);
+  }, [isDirty, onDirtyChange]);
+
   function handleSave() {
     onSave(profile);
   }
 
   return (
     <div className="space-y-6">
-      <FlavorRadarChart profile={profile} />
-
       <div className="space-y-4">
         <div className="space-y-3">
           <div className="flex justify-between items-center">
@@ -78,7 +86,6 @@ export default function ProfileForm({
           />
         </div>
       </div>
-
       <Button onClick={handleSave} disabled={isLoading} className="w-full">
         {isLoading ? "Saving..." : "Save Profile"}
       </Button>

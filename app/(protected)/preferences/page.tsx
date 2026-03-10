@@ -1,25 +1,85 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useTheme } from "next-themes";
 import { signOut, useSession } from "next-auth/react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Toast } from "@/components/ui/toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import ProfileForm from "@/components/preferences/ProfileForm";
 import type { FlavorProfile } from "@/lib/recommendations/engine";
 
 export default function PreferencesPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState<"success" | "error" | null>(null);
+  const [isDirty, setIsDirty] = useState(false);
+  const [pendingHref, setPendingHref] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
   const { data: session } = useSession();
   const { theme, setTheme } = useTheme();
+
+  useEffect(() => setMounted(true), []);
   const saveTheme = useMutation(api.settings.setTheme);
 
   const weekdayProfile = useQuery(api.preferences.get, { type: "weekday" });
   const weekendProfile = useQuery(api.preferences.get, { type: "weekend" });
   const upsertProfile = useMutation(api.preferences.upsert);
+
+  // Keep a ref so event handlers always see the latest value
+  const isDirtyRef = useRef(isDirty);
+  isDirtyRef.current = isDirty;
+
+  // Intercept anchor link clicks
+  const handleLinkClick = useCallback((e: MouseEvent) => {
+    if (!isDirtyRef.current) return;
+    const link = (e.target as Element).closest("a[href]");
+    if (!link) return;
+    const href = link.getAttribute("href");
+    if (!href || !href.startsWith("/")) return;
+    e.preventDefault();
+    e.stopPropagation();
+    setPendingHref(href);
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("click", handleLinkClick, true);
+    return () => document.removeEventListener("click", handleLinkClick, true);
+  }, [handleLinkClick]);
+
+  // Push a duplicate history entry when dirty so the first back press
+  // stays on this page, then intercept popstate to show the dialog
+  useEffect(() => {
+    if (!isDirty) return;
+    window.history.pushState(null, "", window.location.href);
+
+    function handlePopState() {
+      if (isDirtyRef.current) {
+        // Re-push so repeated back presses keep triggering the dialog
+        window.history.pushState(null, "", window.location.href);
+        setPendingHref("__back__");
+      }
+    }
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [isDirty]);
+
+  // Warn on browser refresh / tab close
+  useEffect(() => {
+    if (!isDirty) return;
+    const handler = (e: BeforeUnloadEvent) => { e.preventDefault(); };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [isDirty]);
 
   async function handleSave(type: "weekday" | "weekend", profile: FlavorProfile) {
     setIsSaving(true);
@@ -64,7 +124,7 @@ export default function PreferencesPage() {
                 key={option}
                 onClick={() => { setTheme(option); void saveTheme({ theme: option }); }}
                 className={`rounded-lg border px-3 py-2 text-sm font-medium capitalize transition-colors cursor-pointer ${
-                  theme === option
+                  mounted && theme === option
                     ? "border-foreground bg-foreground text-background"
                     : "border-border hover:bg-accent"
                 }`}
@@ -117,6 +177,7 @@ export default function PreferencesPage() {
                     : { bitterness: 3, sourness: 3, richness: 3 }
                 }
                 onSave={(profile) => handleSave("weekday", profile)}
+                onDirtyChange={setIsDirty}
                 isLoading={isSaving}
               />
             </TabsContent>
@@ -133,12 +194,44 @@ export default function PreferencesPage() {
                     : { bitterness: 3, sourness: 3, richness: 3 }
                 }
                 onSave={(profile) => handleSave("weekend", profile)}
+                onDirtyChange={setIsDirty}
                 isLoading={isSaving}
               />
             </TabsContent>
           </Tabs>
         )}
       </div>
+
+      <Dialog open={!!pendingHref} onOpenChange={() => setPendingHref(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Unsaved changes</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            You have unsaved flavour preference changes. If you leave now they will be lost.
+          </p>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setPendingHref(null)}>
+              Stay
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                const href = pendingHref;
+                setPendingHref(null);
+                setIsDirty(false);
+                if (href === "__back__") {
+                  window.history.go(-2); // skip the two duplicate entries we pushed
+                } else {
+                  window.location.href = href!;
+                }
+              }}
+            >
+              Leave anyway
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
