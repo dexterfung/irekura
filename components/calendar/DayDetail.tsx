@@ -4,12 +4,6 @@ import { useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id, Doc } from "@/convex/_generated/dataModel";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
 import { format, parseISO } from "date-fns";
 import { useTranslations } from "next-intl";
 
@@ -22,7 +16,6 @@ interface DayDetailEntry {
 interface DayDetailProps {
   date: string | null; // "YYYY-MM-DD"
   entries: DayDetailEntry[];
-  onClose: () => void;
 }
 
 const STAR_YELLOW = "#facc15";
@@ -62,53 +55,49 @@ function StarRating({
   );
 }
 
-export default function DayDetail({ date, entries, onClose }: DayDetailProps) {
+export default function DayDetail({ date, entries }: DayDetailProps) {
   const rateLog = useMutation(api.consumption.rate);
   const t = useTranslations("history");
+
+  if (!date) return null;
 
   async function handleRate(id: Id<"consumptionLogs">, rating: number) {
     await rateLog({ id, rating });
   }
 
-  const formattedDate = date
-    ? format(parseISO(date), "EEEE, MMMM d, yyyy")
-    : "";
+  const formattedDate = format(parseISO(date), "EEEE, MMMM d, yyyy");
 
   return (
-    <Sheet open={!!date} onOpenChange={(open) => !open && onClose()}>
-      <SheetContent side="bottom" className="max-h-[70vh] overflow-y-auto">
-        <SheetHeader>
-          <SheetTitle>{formattedDate}</SheetTitle>
-        </SheetHeader>
+    <div className="border-t border-border mt-4 pt-4">
+      <p className="text-sm font-semibold mb-3">{formattedDate}</p>
 
-        <div className="mt-4 space-y-4">
-          {entries.length === 0 ? (
-            <p className="text-muted-foreground text-sm text-center py-4">
-              {t("noCoffeeLogged")}
-            </p>
-          ) : (
-            entries.map(({ log, product, batch }) => (
-              <div key={log._id} className="border rounded-lg p-3 space-y-2">
-                <div>
-                  <div className="font-medium">{product.name}</div>
-                  <div className="text-sm text-muted-foreground">{product.brand}</div>
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  {t("batchBestBefore", { date: batch?.bestBeforeDate ?? "—" })}
-                </div>
-                <div className="space-y-1">
-                  <div className="text-xs text-muted-foreground">{t("ratingOptional")}</div>
-                  <StarRating
-                    value={log.rating}
-                    logId={log._id}
-                    onRate={handleRate}
-                  />
-                </div>
+      {entries.length === 0 ? (
+        <p className="text-muted-foreground text-sm text-center py-6">
+          {t("noCoffeeLogged")}
+        </p>
+      ) : (
+        <div className="space-y-3">
+          {entries.map(({ log, product, batch }) => (
+            <div key={log._id} className="border rounded-lg p-3 space-y-2">
+              <div>
+                <div className="font-medium">{product.name}</div>
+                <div className="text-sm text-muted-foreground">{product.brand}</div>
               </div>
-            ))
-          )}
+              <div className="text-xs text-muted-foreground">
+                {t("batchBestBefore", { date: batch?.bestBeforeDate ?? "—" })}
+              </div>
+              <div className="space-y-1">
+                <div className="text-xs text-muted-foreground">{t("ratingOptional")}</div>
+                <StarRating
+                  value={log.rating}
+                  logId={log._id}
+                  onRate={handleRate}
+                />
+              </div>
+            </div>
+          ))}
         </div>
-      </SheetContent>
-    </Sheet>
+      )}
+    </div>
   );
 }

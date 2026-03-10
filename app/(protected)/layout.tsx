@@ -17,7 +17,7 @@ export default async function ProtectedLayout({
   }
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex overflow-x-hidden">
       <DesktopSideNav />
 
       <div className="flex flex-col flex-1 lg:ml-56 min-h-screen">

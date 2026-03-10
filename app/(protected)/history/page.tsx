@@ -75,7 +75,7 @@ export default function HistoryPage() {
 
   return (
     <div className="min-h-full">
-<div className="p-4 max-w-lg mx-auto">
+      <div className="p-4 max-w-lg mx-auto">
         {/* Responsive calendar */}
         <div className="sm:hidden">
           <WeeklyStrip
@@ -99,14 +99,13 @@ export default function HistoryPage() {
             }}
           />
         </div>
-      </div>
 
-      {/* Day detail */}
-      <DayDetail
-        date={selectedDate}
-        entries={selectedDateEntries}
-        onClose={() => setSelectedDate(null)}
-      />
+        {/* Day detail — inline below calendar */}
+        <DayDetail
+          date={selectedDate}
+          entries={selectedDateEntries}
+        />
+      </div>
 
       {/* Quick-log FAB */}
       <Button
@@ -155,7 +154,7 @@ export default function HistoryPage() {
                 <SelectContent>
                   {(batches as Array<{ _id: string; brewsRemaining: number; bestBeforeDate: string }>)?.map((b) => (
                     <SelectItem key={b._id} value={b._id}>
-                      {b.brewsRemaining} brews — best before {b.bestBeforeDate}
+                      {b.brewsRemaining} — {b.bestBeforeDate}
                     </SelectItem>
                   ))}
                 </SelectContent>
