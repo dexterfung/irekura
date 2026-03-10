@@ -181,7 +181,7 @@ export const DEFAULT_FILTERS: FilterState = {
   type: "all",
   status: "all",
   brand: "all",
-  sort: "name",
+  sort: "bestBefore",
 };
 
 // ─── FilterBar ────────────────────────────────────────────────────────────────

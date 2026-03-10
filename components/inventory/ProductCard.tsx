@@ -68,7 +68,7 @@ export default function ProductCard({ product, batches, href }: ProductCardProps
         </div>
         {earliestExpiry && (
           <div className="text-xs text-muted-foreground mt-1">
-            Best before: {earliestExpiry}
+            Earliest best before: {earliestExpiry}
           </div>
         )}
       </CardContent>
