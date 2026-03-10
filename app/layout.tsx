@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import NextTopLoader from "nextjs-toploader";
@@ -6,6 +6,12 @@ import ConvexClientProvider from "@/components/ConvexClientProvider";
 import ThemeSync from "@/components/ThemeSync";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import { auth } from "@/lib/auth";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
   title: "Irekura",
