@@ -37,7 +37,7 @@ export default function GuestProfileSection() {
     );
   }
 
-  const guestEnabled = guestSettings.guestEnabled ?? false;
+  const guestEnabled = guestSettings?.guestEnabled ?? false;
 
   async function handleToggle() {
     setIsTogglingEnabled(true);
