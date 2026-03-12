@@ -7,10 +7,9 @@ export default function AuthErrorPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Any error during OAuth means the user is not authenticated — send them
-    // back to sign in. We don't rely on useSession here because Convex may not
-    // be available in this context, which keeps the session stuck in "loading".
-    router.replace("/auth/signin?error=true");
+    // Redirect to home — the root page checks session and routes accordingly:
+    // authenticated → /inventory, unauthenticated → /auth/signin
+    router.replace("/");
   }, [router]);
 
   return null;
