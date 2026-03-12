@@ -11,6 +11,7 @@ interface BatchItemProps {
   batch: Doc<"batches">;
   onEditQuantity?: () => void;
   onDelete?: () => void;
+  isApproximate?: boolean;
 }
 
 type ExpiryUrgency = "expired" | "urgent" | "warning" | "ok";
@@ -30,7 +31,7 @@ const URGENCY_VARIANTS: Record<ExpiryUrgency, "expired" | "urgent" | "warning" |
   ok: "ok",
 };
 
-export default function BatchItem({ batch, onEditQuantity, onDelete }: BatchItemProps) {
+export default function BatchItem({ batch, onEditQuantity, onDelete, isApproximate = false }: BatchItemProps) {
   const t = useTranslations("inventory");
   const tDetail = useTranslations("productDetail");
   const tBatch = useTranslations("batchForm");
@@ -50,7 +51,7 @@ export default function BatchItem({ batch, onEditQuantity, onDelete }: BatchItem
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="font-medium text-sm">
-            {t("brewsRemaining", { count: batch.brewsRemaining })}
+            {isApproximate ? t("estimatedServings", { count: batch.brewsRemaining }) : t("brewsRemaining", { count: batch.brewsRemaining })}
           </span>
           {isDepleted ? (
             <Badge variant="secondary">{t("depleted")}</Badge>

@@ -49,6 +49,8 @@ function StarDisplay({ value, label }: { value: number; label: string }) {
   );
 }
 
+const APPROXIMATE_TYPES = ["ground-bean", "instant-powder"];
+
 export default function ProductDetailPage() {
   const { productId } = useParams();
   const router = useRouter();
@@ -232,6 +234,7 @@ export default function ProductDetailPage() {
                     onSubmit={handleAddBatch}
                     submitLabel={t("addBatch")}
                     isLoading={isLoading}
+                    isApproximate={APPROXIMATE_TYPES.includes(product.type)}
                   />
                 </div>
               </SheetContent>
@@ -250,6 +253,7 @@ export default function ProductDetailPage() {
                     setEditingBatch({ id: batch._id, qty: batch.brewsRemaining.toString() })
                   }
                   onDelete={() => setDeletingBatchId(batch._id)}
+                  isApproximate={APPROXIMATE_TYPES.includes(product.type)}
                 />
               ))}
             </div>
@@ -261,10 +265,10 @@ export default function ProductDetailPage() {
       <Dialog open={!!editingBatch} onOpenChange={(open) => !open && setEditingBatch(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t("editBrewsRemaining")}</DialogTitle>
+            <DialogTitle>{APPROXIMATE_TYPES.includes(product.type) ? t("updateServings") : t("editBrewsRemaining")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-2">
-            <Label htmlFor="edit-qty">{t("brewsRemainingLabel")}</Label>
+            <Label htmlFor="edit-qty">{APPROXIMATE_TYPES.includes(product.type) ? t("estimatedServingsLabel") : t("brewsRemainingLabel")}</Label>
             <Input
               id="edit-qty"
               type="number"

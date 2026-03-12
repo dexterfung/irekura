@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+const APPROXIMATE_TYPES = ["ground-bean", "instant-powder"];
+
 export default function NewProductPage() {
   const router = useRouter();
   const createProduct = useMutation(api.products.create);
@@ -83,6 +85,7 @@ export default function NewProductPage() {
               onSubmit={handleBatchSubmit}
               submitLabel={t("addToInventory")}
               isLoading={isLoading}
+              isApproximate={APPROXIMATE_TYPES.includes(productData?.type ?? "")}
             />
           </>
         )}

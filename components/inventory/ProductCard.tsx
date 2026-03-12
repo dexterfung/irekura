@@ -36,6 +36,8 @@ export default function ProductCard({ product, batches, href }: ProductCardProps
     (b) => getDaysUntilExpiry(b.bestBeforeDate, today) < 0
   );
 
+  const isApproximate = product.type === "ground-bean" || product.type === "instant-powder";
+
   return (
     <Link href={href} className="block">
     <Card
@@ -55,7 +57,7 @@ export default function ProductCard({ product, batches, href }: ProductCardProps
       <CardContent className="pt-0">
         <div className="flex items-center justify-between">
           <div className="text-sm">
-            {t("brewsRemaining", { count: totalBrews })}
+            {isApproximate ? t("estimatedServings", { count: totalBrews }) : t("brewsRemaining", { count: totalBrews })}
           </div>
           <div className="flex gap-1">
             {hasExpired && <Badge variant="expired">{t("expired")}</Badge>}

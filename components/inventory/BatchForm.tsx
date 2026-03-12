@@ -16,6 +16,7 @@ interface BatchFormProps {
   onSubmit: (values: BatchFormValues) => void;
   submitLabel?: string;
   isLoading?: boolean;
+  isApproximate?: boolean;
 }
 
 export default function BatchForm({
@@ -23,6 +24,7 @@ export default function BatchForm({
   onSubmit,
   submitLabel,
   isLoading = false,
+  isApproximate = false,
 }: BatchFormProps) {
   const t = useTranslations("batchForm");
   const tCommon = useTranslations("common");
@@ -42,7 +44,7 @@ export default function BatchForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="brews-remaining">{t("brewsRemaining")}</Label>
+        <Label htmlFor="brews-remaining">{isApproximate ? t("estimatedServings") : t("brewsRemaining")}</Label>
         <Input
           id="brews-remaining"
           type="number"
