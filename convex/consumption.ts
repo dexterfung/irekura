@@ -61,6 +61,7 @@ export const create = mutation({
     batchId: v.id("batches"),
     date: v.string(),
     rating: v.optional(v.number()),
+    loggedFor: v.optional(v.union(v.literal("self"), v.literal("guest"))),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -96,6 +97,7 @@ export const create = mutation({
       batchId: args.batchId,
       date: args.date,
       rating: args.rating,
+      loggedFor: args.loggedFor ?? "self",
     });
 
     await ctx.db.patch(args.batchId, {
@@ -103,6 +105,23 @@ export const create = mutation({
     });
 
     return logId;
+  },
+});
+
+export const listRecentForGuest = query({
+  args: { limit: v.number() },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new ConvexError("Unauthenticated");
+
+    const logs = await ctx.db
+      .query("consumptionLogs")
+      .withIndex("by_user", (q) => q.eq("userId", identity.subject))
+      .order("desc")
+      .filter((q) => q.eq(q.field("loggedFor"), "guest"))
+      .take(args.limit);
+
+    return logs.map((log) => log.productId as string);
   },
 });
 

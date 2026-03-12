@@ -52,18 +52,38 @@ export default function RecommendPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [ratingDialogOpen, setRatingDialogOpen] = useState(false);
   const [pendingLogId, setPendingLogId] = useState<Id<"consumptionLogs"> | null>(null);
+  const [viewingAs, setViewingAs] = useState<"self" | "guest">("self");
   const t = useTranslations("recommend");
+  const tGuest = useTranslations("guestProfile");
 
+  const dayType = getDayType(toISODateString(new Date()));
+
+  const guestSettings = useQuery(api.settings.getGuestSettings);
   const activeBatches = useQuery(api.batches.listActive);
-  const recentProductIds = useQuery(api.consumption.listRecent, { limit: 10 });
-  const weekdayProfile = useQuery(api.preferences.get, { type: getDayType(toISODateString(new Date())) });
+  const selfRecentProductIds = useQuery(api.consumption.listRecent, { limit: 10 });
+  const guestRecentProductIds = useQuery(
+    api.consumption.listRecentForGuest,
+    viewingAs === "guest" ? { limit: 10 } : "skip"
+  );
+  const selfProfile = useQuery(api.preferences.get, { type: dayType });
+  const guestProfile = useQuery(
+    api.preferences.getForGuest,
+    viewingAs === "guest" ? { type: dayType } : "skip"
+  );
   const createLog = useMutation(api.consumption.create);
   const rateLog = useMutation(api.consumption.rate);
 
-  const isLoading =
-    activeBatches === undefined || recentProductIds === undefined || weekdayProfile === undefined;
+  const guestEnabled = guestSettings?.guestEnabled ?? false;
+  const guestDisplayName = guestSettings?.guestDisplayName ?? tGuest("defaultName");
 
-  const profile = weekdayProfile ?? getDefaultProfile();
+  const isLoading =
+    activeBatches === undefined ||
+    selfRecentProductIds === undefined ||
+    selfProfile === undefined ||
+    guestSettings === undefined;
+
+  const activeProfile = (viewingAs === "guest" ? guestProfile : selfProfile) ?? getDefaultProfile();
+  const activeRecentIds = (viewingAs === "guest" ? guestRecentProductIds : selfRecentProductIds) ?? [];
   const today = toISODateString(new Date());
 
   const batches: BatchInput[] = isLoading
@@ -84,7 +104,7 @@ export default function RecommendPage() {
       }));
 
   const ranked = selectedMood
-    ? scoreAndRankBatches(batches, profile, selectedMood, today, recentProductIds ?? [])
+    ? scoreAndRankBatches(batches, activeProfile, selectedMood, today, activeRecentIds)
     : [];
 
   const recommendation = ranked[currentIndex] ?? null;
@@ -96,6 +116,7 @@ export default function RecommendPage() {
         productId: recommendation.productId as Id<"products">,
         batchId: recommendation.batchId as Id<"batches">,
         date: today,
+        loggedFor: viewingAs,
       });
       setPendingLogId(logId);
       setRatingDialogOpen(true);
@@ -143,7 +164,31 @@ export default function RecommendPage() {
 
   return (
     <div className="min-h-full">
-<div className="p-4 max-w-lg mx-auto space-y-6">
+      <div className="p-4 max-w-lg mx-auto space-y-6">
+        {/* Person switcher — only when guest is enabled */}
+        {guestEnabled && (
+          <div className="flex rounded-lg border border-border overflow-hidden">
+            {(["self", "guest"] as const).map((option) => (
+              <button
+                key={option}
+                type="button"
+                onClick={() => {
+                  setViewingAs(option);
+                  setSelectedMood(null);
+                  setCurrentIndex(0);
+                }}
+                className={`flex-1 py-2 text-sm font-medium transition-colors min-h-[44px] ${
+                  viewingAs === option
+                    ? "bg-foreground text-background"
+                    : "bg-background text-foreground hover:bg-accent"
+                }`}
+              >
+                {option === "self" ? tGuest("you") : guestDisplayName}
+              </button>
+            ))}
+          </div>
+        )}
+
         <MoodSelector
           selected={selectedMood}
           onSelect={(mood) => {
@@ -172,6 +217,7 @@ export default function RecommendPage() {
           </div>
         )}
       </div>
+
 
       {/* Rating dialog */}
       <Dialog open={ratingDialogOpen} onOpenChange={setRatingDialogOpen}>

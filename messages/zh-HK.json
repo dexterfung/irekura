@@ -192,5 +192,18 @@
   },
   "starRating": {
     "star": "{count} 星"
+  },
+  "guestProfile": {
+    "sectionTitle": "訪客設定",
+    "enableToggle": "啟用訪客",
+    "displayNameLabel": "訪客名稱",
+    "displayNamePlaceholder": "例：Alex",
+    "flavorPreferences": "訪客風味偏好",
+    "flavorDescription": "設定各風味維度在訪客推薦時的重要程度。",
+    "loggingFor": "記錄對象",
+    "you": "我",
+    "filterAll": "全部",
+    "filterYou": "我",
+    "defaultName": "訪客"
   }
 }

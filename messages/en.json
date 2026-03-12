@@ -192,5 +192,18 @@
   },
   "starRating": {
     "star": "{count, plural, one {# star} other {# stars}}"
+  },
+  "guestProfile": {
+    "sectionTitle": "Guest Profile",
+    "enableToggle": "Enable guest profile",
+    "displayNameLabel": "Guest name",
+    "displayNamePlaceholder": "e.g. Alex",
+    "flavorPreferences": "Guest Flavour Preferences",
+    "flavorDescription": "Set how much each flavour dimension matters for the guest's recommendations.",
+    "loggingFor": "Logging for",
+    "you": "You",
+    "filterAll": "All",
+    "filterYou": "You",
+    "defaultName": "Guest"
   }
 }

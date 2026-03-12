@@ -34,6 +34,7 @@ export default defineSchema({
     batchId: v.id("batches"),
     date: v.string(),
     rating: v.optional(v.number()),
+    loggedFor: v.optional(v.union(v.literal("self"), v.literal("guest"))),
   })
     .index("by_user_date", ["userId", "date"])
     .index("by_user", ["userId"]),
@@ -49,5 +50,8 @@ export default defineSchema({
   userSettings: defineTable({
     userId: v.string(),
     theme: v.union(v.literal("system"), v.literal("light"), v.literal("dark")),
+    guestEnabled: v.optional(v.boolean()),
+    guestId: v.optional(v.string()),
+    guestDisplayName: v.optional(v.string()),
   }).index("by_user", ["userId"]),
 });

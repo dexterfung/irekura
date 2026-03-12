@@ -230,3 +230,55 @@ describe("getDefaultProfile", () => {
     expect(getDefaultProfile()).toEqual({ bitterness: 3, sourness: 3, richness: 3 });
   });
 });
+
+// ─── Guest profile passthrough ──────────────────────────────────────────────
+// Verifies that the recommendation engine produces different results when
+// called with a guest FlavorProfile vs. the main account's profile.
+// The engine is pure: it accepts a FlavorProfile value and is unaware of
+// whether it belongs to a guest or main account.
+
+describe("guest profile passthrough", () => {
+  // batchA: high bitterness, low richness — wins when bitterness matters more
+  const batchA = makeBatch({
+    batchId: "batch-a",
+    productId: "p-a",
+    product: { name: "Dark Roast", brand: "B", type: "drip-bag", bitterness: 5, sourness: 3, richness: 1 },
+  });
+  // batchB: low bitterness, high richness — wins when richness matters more
+  const batchB = makeBatch({
+    batchId: "batch-b",
+    productId: "p-b",
+    product: { name: "Rich Blend", brand: "B", type: "drip-bag", bitterness: 1, sourness: 3, richness: 5 },
+  });
+  const batches = [batchA, batchB];
+
+  // strong-rich score = product.bitterness * profile.bitterness + product.richness * profile.richness
+  // batchA with mainProfile {bitterness:5, richness:1}: 5*5 + 1*1 = 26
+  // batchB with mainProfile {bitterness:5, richness:1}: 1*5 + 5*1 = 10  → A wins
+  // batchA with guestProfile {bitterness:1, richness:5}: 5*1 + 1*5 = 10
+  // batchB with guestProfile {bitterness:1, richness:5}: 1*1 + 5*5 = 26  → B wins
+  it("strong-rich: different top recommendation when bitterness vs richness profile weight differs", () => {
+    const mainProfile: FlavorProfile = { bitterness: 5, sourness: 3, richness: 1 };
+    const guestProfile: FlavorProfile = { bitterness: 1, sourness: 3, richness: 5 };
+
+    const mainRanked = scoreAndRankBatches(batches, mainProfile, "strong-rich", today, []);
+    const guestRanked = scoreAndRankBatches(batches, guestProfile, "strong-rich", today, []);
+
+    expect(mainRanked[0].batchId).toBe("batch-a"); // bitterness wins for main
+    expect(guestRanked[0].batchId).toBe("batch-b"); // richness wins for guest
+  });
+
+  it("engine does not modify the profile passed in (no mutation side effects)", () => {
+    const guestProfile: FlavorProfile = { bitterness: 5, sourness: 1, richness: 5 };
+    const original = { ...guestProfile };
+    scoreAndRankBatches(batches, guestProfile, "strong-rich", today, []);
+    expect(guestProfile).toEqual(original);
+  });
+
+  it("passing guest profile to engine yields same type as main account profile", () => {
+    const guestProfile: FlavorProfile = { bitterness: 3, sourness: 3, richness: 3 };
+    const result = scoreAndRankBatches(batches, guestProfile, "smooth-balanced", today, []);
+    expect(Array.isArray(result)).toBe(true);
+    result.forEach((r) => expect(typeof r.score).toBe("number"));
+  });
+});

@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import ProfileForm from "@/components/preferences/ProfileForm";
+import GuestProfileSection from "@/components/preferences/GuestProfileSection";
 import type { FlavorProfile } from "@/lib/recommendations/engine";
 import { useTranslations, useLocale } from "next-intl";
 import { setLocale } from "@/app/actions/locale";
@@ -161,6 +162,9 @@ export default function PreferencesPage() {
             ))}
           </div>
         </div>
+
+        {/* Guest Profile */}
+        <GuestProfileSection />
 
         {/* Flavour preferences */}
         <p className="text-sm font-medium mb-2">{t("flavorPreferences")}</p>

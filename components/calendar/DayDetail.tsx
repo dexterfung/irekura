@@ -1,11 +1,14 @@
 "use client";
 
+"use client";
+
 import { useState } from "react";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id, Doc } from "@/convex/_generated/dataModel";
 import { format, parseISO } from "date-fns";
 import { useTranslations } from "next-intl";
+import { Badge } from "@/components/ui/badge";
 
 interface DayDetailEntry {
   log: Doc<"consumptionLogs">;
@@ -58,6 +61,10 @@ function StarRating({
 export default function DayDetail({ date, entries }: DayDetailProps) {
   const rateLog = useMutation(api.consumption.rate);
   const t = useTranslations("history");
+  const tGuest = useTranslations("guestProfile");
+  const guestSettings = useQuery(api.settings.getGuestSettings);
+  const guestEnabled = guestSettings?.guestEnabled ?? false;
+  const guestDisplayName = guestSettings?.guestDisplayName ?? tGuest("defaultName");
 
   if (!date) return null;
 
@@ -79,9 +86,16 @@ export default function DayDetail({ date, entries }: DayDetailProps) {
         <div className="space-y-3">
           {entries.map(({ log, product, batch }) => (
             <div key={log._id} className="border rounded-lg p-3 space-y-2">
-              <div>
-                <div className="font-medium">{product.name}</div>
-                <div className="text-sm text-muted-foreground">{product.brand}</div>
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <div className="font-medium">{product.name}</div>
+                  <div className="text-sm text-muted-foreground">{product.brand}</div>
+                </div>
+                {guestEnabled && (
+                  <Badge variant={log.loggedFor === "guest" ? "secondary" : "default"} className="shrink-0 text-xs">
+                    {log.loggedFor === "guest" ? guestDisplayName : tGuest("you")}
+                  </Badge>
+                )}
               </div>
               <div className="text-xs text-muted-foreground">
                 {t("batchBestBefore", { date: batch?.bestBeforeDate ?? "—" })}
