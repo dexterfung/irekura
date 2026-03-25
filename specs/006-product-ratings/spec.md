@@ -162,10 +162,13 @@ occasions. They view the product in the Inventory and see an average rating of 4
 - **FR-005**: The system MUST allow the user to add, view, or update a free-text tasting note
   (max 280 characters) on any consumption log entry.
 - **FR-006**: The recommendation engine MUST factor in the user's past ratings when scoring
-  products, using a sliding window of the last 5 ratings per product.
+  products, using a sliding window of the last 5 ratings per product. The rating multiplier
+  MUST apply only to the flavour score component; the expiry urgency score MUST remain
+  unaffected by ratings.
 - **FR-007**: The recommendation engine MUST apply a boost multiplier for products with a high
   average recent rating (>= 4 stars) and a penalty multiplier for products with a low average
-  recent rating (<= 2 stars).
+  recent rating (<= 2 stars). The rating multiplier MUST only apply to flavour-based moods
+  (Light & Bright, Strong & Rich, Smooth & Balanced) and MUST NOT apply to "Surprise Me" mood.
 - **FR-008**: Products with no ratings MUST receive a neutral multiplier (1.0) in the
   recommendation engine — new products must not be disadvantaged.
 - **FR-009**: Guest ratings MUST be stored separately from main account ratings (via the
@@ -204,6 +207,13 @@ occasions. They view the product in the Inventory and see an average rating of 4
   History entry immediately without a page reload.
 - **SC-005**: The product average rating displayed in Inventory accurately reflects all
   rated consumption entries for that product and person.
+
+## Clarifications
+
+### Session 2026-03-25
+
+- Q: Should the rating multiplier apply in "Surprise Me" mood? → A: No. Ratings apply to flavour-based moods only (Light & Bright, Strong & Rich, Smooth & Balanced); Surprise Me is unaffected by ratings.
+- Q: Should the rating multiplier apply to the total score or just the flavour score? → A: Flavour score only. Expiry urgency is never affected by ratings — near-expiring products must still be surfaced regardless of past ratings.
 
 ## Assumptions
 
