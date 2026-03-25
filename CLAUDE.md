@@ -25,6 +25,7 @@ npm test && npm run lint
 TypeScript 5.7 / Node.js LTS 22: Follow standard conventions
 
 ## Recent Changes
+- 006-product-ratings: Added TypeScript 5.7 (strict mode) + Next.js 15 (App Router), Convex, NextAuth v5, Tailwind CSS v4, shadcn/ui
 - 002-guest-profile: Added TypeScript 5.7 (strict mode) + Next.js 15 (App Router), Convex, NextAuth v5, Tailwind CSS v4, shadcn/ui
 
 - 001-coffee-inventory: Added TypeScript 5.7 / Node.js LTS 22 + Next.js 15, Convex, NextAuth v5, Tailwind CSS v4, shadcn/ui,
