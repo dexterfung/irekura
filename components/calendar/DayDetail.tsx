@@ -58,9 +58,89 @@ function StarRating({
   );
 }
 
+function TastingNotesEditor({
+  logId,
+  initialValue,
+}: {
+  logId: Id<"consumptionLogs">;
+  initialValue: string | undefined;
+}) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [notes, setNotes] = useState(initialValue ?? "");
+  const rateLog = useMutation(api.consumption.rate);
+  const tNotes = useTranslations("tastingNotes");
+
+  async function handleSave() {
+    await rateLog({
+      id: logId,
+      tastingNotes: notes.trim() || undefined,
+    });
+    setIsEditing(false);
+  }
+
+  if (!isEditing) {
+    return (
+      <button
+        type="button"
+        onClick={() => {
+          setNotes(initialValue ?? "");
+          setIsEditing(true);
+        }}
+        className={`text-xs text-left w-full rounded-md px-2 py-1.5 transition-colors ${
+          initialValue
+            ? "text-muted-foreground hover:bg-accent"
+            : "text-muted-foreground/60 border border-dashed border-border hover:border-foreground/30 hover:text-muted-foreground"
+        }`}
+      >
+        {initialValue ? (
+          <span className="italic">&ldquo;{initialValue}&rdquo;</span>
+        ) : (
+          <span>+ {tNotes("label")}</span>
+        )}
+      </button>
+    );
+  }
+
+  return (
+    <div className="space-y-1">
+      <textarea
+        value={notes}
+        onChange={(e) => setNotes(e.target.value.slice(0, 280))}
+        placeholder={tNotes("placeholder")}
+        maxLength={280}
+        rows={2}
+        className="w-full rounded-md border border-input bg-background px-2 py-1 text-xs resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+        autoFocus
+      />
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-muted-foreground">
+          {tNotes("charCount", { count: notes.length })}
+        </span>
+        <div className="flex gap-1">
+          <button
+            type="button"
+            onClick={() => setIsEditing(false)}
+            className="text-xs text-muted-foreground hover:text-foreground px-2 py-1"
+          >
+            ✕
+          </button>
+          <button
+            type="button"
+            onClick={handleSave}
+            className="text-xs font-medium text-foreground px-2 py-1"
+          >
+            ✓
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function DayDetail({ date, entries }: DayDetailProps) {
   const rateLog = useMutation(api.consumption.rate);
   const t = useTranslations("history");
+  const tNotes = useTranslations("tastingNotes");
   const tGuest = useTranslations("guestProfile");
   const guestSettings = useQuery(api.settings.getGuestSettings);
   const guestEnabled = guestSettings?.guestEnabled ?? false;
@@ -106,6 +186,13 @@ export default function DayDetail({ date, entries }: DayDetailProps) {
                   value={log.rating}
                   logId={log._id}
                   onRate={handleRate}
+                />
+              </div>
+              <div className="space-y-1">
+                <div className="text-xs text-muted-foreground">{tNotes("label")}</div>
+                <TastingNotesEditor
+                  logId={log._id}
+                  initialValue={log.tastingNotes}
                 />
               </div>
             </div>

@@ -157,7 +157,16 @@
     "smoothBalanced": "Smooth & Balanced",
     "smoothBalancedDesc": "Well-rounded",
     "surpriseMe": "Surprise Me",
-    "surpriseMeDesc": "Something different"
+    "surpriseMeDesc": "Something different",
+    "howItWorks": "How it works",
+    "howItWorksExpiryTitle": "Expiring soon comes first",
+    "howItWorksExpiryDesc": "Coffee close to its best-before date is prioritised so nothing goes to waste.",
+    "howItWorksFlavourTitle": "Matched to your taste",
+    "howItWorksFlavourDesc": "Your flavour preferences and the selected mood determine which coffees score highest.",
+    "howItWorksRatingTitle": "Ratings fine-tune it",
+    "howItWorksRatingDesc": "Products you consistently rate 4+ stars get a boost. Products rated 2 or below are deprioritised. Unrated products are not affected.",
+    "howItWorksSurpriseTitle": "Surprise Me is different",
+    "howItWorksSurpriseDesc": "This mood ignores ratings and preferences — it picks something you haven't had recently."
   },
   "history": {
     "pageTitle": "History",
@@ -192,6 +201,17 @@
   },
   "starRating": {
     "star": "{count, plural, one {# star} other {# stars}}"
+  },
+  "tastingNotes": {
+    "label": "Tasting Notes",
+    "placeholder": "e.g. Smooth, slight chocolate finish...",
+    "charCount": "{count}/280",
+    "save": "Save Note"
+  },
+  "averageRating": {
+    "label": "Avg. rating",
+    "outOf": "{rating} / 5.0",
+    "noRatings": "No ratings yet"
   },
   "guestProfile": {
     "sectionTitle": "Guest Profile",

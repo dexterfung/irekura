@@ -24,6 +24,13 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { useTranslations } from "next-intl";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 function RatingStars({ onRate }: { onRate: (rating: number) => void }) {
   const [hoverValue, setHoverValue] = useState<number | null>(null);
@@ -53,8 +60,10 @@ export default function RecommendPage() {
   const [ratingDialogOpen, setRatingDialogOpen] = useState(false);
   const [pendingLogId, setPendingLogId] = useState<Id<"consumptionLogs"> | null>(null);
   const [viewingAs, setViewingAs] = useState<"self" | "guest">("self");
+  const [tastingNotes, setTastingNotes] = useState("");
   const t = useTranslations("recommend");
   const tGuest = useTranslations("guestProfile");
+  const tNotes = useTranslations("tastingNotes");
 
   const dayType = getDayType(toISODateString(new Date()));
 
@@ -69,6 +78,11 @@ export default function RecommendPage() {
   const guestProfile = useQuery(
     api.preferences.getForGuest,
     viewingAs === "guest" ? { type: dayType } : "skip"
+  );
+  const selfProductRatings = useQuery(api.consumption.ratingsForProducts, { forGuest: false });
+  const guestProductRatings = useQuery(
+    api.consumption.ratingsForProducts,
+    viewingAs === "guest" ? { forGuest: true } : "skip"
   );
   const createLog = useMutation(api.consumption.create);
   const rateLog = useMutation(api.consumption.rate);
@@ -103,8 +117,10 @@ export default function RecommendPage() {
         },
       }));
 
+  const activeProductRatings = (viewingAs === "guest" ? guestProductRatings : selfProductRatings) ?? {};
+
   const ranked = selectedMood
-    ? scoreAndRankBatches(batches, activeProfile, selectedMood, today, activeRecentIds)
+    ? scoreAndRankBatches(batches, activeProfile, selectedMood, today, activeRecentIds, activeProductRatings)
     : [];
 
   const recommendation = ranked[currentIndex] ?? null;
@@ -129,9 +145,14 @@ export default function RecommendPage() {
 
   async function handleRate(rating: number) {
     if (!pendingLogId) return;
-    await rateLog({ id: pendingLogId, rating });
+    await rateLog({
+      id: pendingLogId,
+      rating,
+      tastingNotes: tastingNotes.trim() || undefined,
+    });
     setRatingDialogOpen(false);
     setPendingLogId(null);
+    setTastingNotes("");
   }
 
   if (isLoading) {
@@ -199,9 +220,45 @@ export default function RecommendPage() {
 
         {selectedMood && recommendation && (
           <div>
-            <h2 className="text-sm font-medium text-muted-foreground mb-3">
-              {t("recommendedForYou")}
-            </h2>
+            <div className="flex items-center gap-1.5 mb-3">
+              <h2 className="text-sm font-medium text-muted-foreground">
+                {t("recommendedForYou")}
+              </h2>
+              <Sheet>
+                <SheetTrigger asChild>
+                  <button
+                    type="button"
+                    className="text-muted-foreground/60 hover:text-muted-foreground transition-colors text-sm leading-none"
+                    aria-label={t("howItWorks")}
+                  >
+                    ⓘ
+                  </button>
+                </SheetTrigger>
+                <SheetContent side="bottom" className="max-h-[70vh] overflow-y-auto">
+                  <SheetHeader>
+                    <SheetTitle>{t("howItWorks")}</SheetTitle>
+                  </SheetHeader>
+                  <div className="space-y-4 py-4">
+                    <div>
+                      <h3 className="text-sm font-semibold">{t("howItWorksExpiryTitle")}</h3>
+                      <p className="text-sm text-muted-foreground">{t("howItWorksExpiryDesc")}</p>
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-semibold">{t("howItWorksFlavourTitle")}</h3>
+                      <p className="text-sm text-muted-foreground">{t("howItWorksFlavourDesc")}</p>
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-semibold">{t("howItWorksRatingTitle")}</h3>
+                      <p className="text-sm text-muted-foreground">{t("howItWorksRatingDesc")}</p>
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-semibold">{t("howItWorksSurpriseTitle")}</h3>
+                      <p className="text-sm text-muted-foreground">{t("howItWorksSurpriseDesc")}</p>
+                    </div>
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
             <RecommendationCard
               recommendation={recommendation}
               onDrink={handleDrink}
@@ -220,18 +277,39 @@ export default function RecommendPage() {
 
 
       {/* Rating dialog */}
-      <Dialog open={ratingDialogOpen} onOpenChange={setRatingDialogOpen}>
+      <Dialog open={ratingDialogOpen} onOpenChange={(open) => {
+        setRatingDialogOpen(open);
+        if (!open) {
+          setPendingLogId(null);
+          setTastingNotes("");
+        }
+      }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t("ratingPrompt")}</DialogTitle>
           </DialogHeader>
           <RatingStars onRate={handleRate} />
+          <div className="space-y-1">
+            <label className="text-sm text-muted-foreground">{tNotes("label")}</label>
+            <textarea
+              value={tastingNotes}
+              onChange={(e) => setTastingNotes(e.target.value.slice(0, 280))}
+              placeholder={tNotes("placeholder")}
+              maxLength={280}
+              rows={2}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+            <p className="text-xs text-muted-foreground text-right">
+              {tNotes("charCount", { count: tastingNotes.length })}
+            </p>
+          </div>
           <DialogFooter>
             <Button
               variant="ghost"
               onClick={() => {
                 setRatingDialogOpen(false);
                 setPendingLogId(null);
+                setTastingNotes("");
               }}
             >
               {t("skip")}

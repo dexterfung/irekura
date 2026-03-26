@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   computeExpiryScore,
   computeFlavorScore,
+  computeRatingMultiplier,
   scoreAndRankBatches,
   getDefaultProfile,
   getDayType,
@@ -280,5 +281,173 @@ describe("guest profile passthrough", () => {
     const result = scoreAndRankBatches(batches, guestProfile, "smooth-balanced", today, []);
     expect(Array.isArray(result)).toBe(true);
     result.forEach((r) => expect(typeof r.score).toBe("number"));
+  });
+});
+
+// ─── computeRatingMultiplier ────────────────────────────────────────────────
+
+describe("computeRatingMultiplier", () => {
+  it("returns 1.0 for undefined (no ratings)", () => {
+    expect(computeRatingMultiplier(undefined)).toBe(1.0);
+  });
+
+  it("returns 1.2 for average rating >= 4", () => {
+    expect(computeRatingMultiplier(4)).toBe(1.2);
+    expect(computeRatingMultiplier(5)).toBe(1.2);
+    expect(computeRatingMultiplier(4.5)).toBe(1.2);
+  });
+
+  it("returns 0.8 for average rating <= 2", () => {
+    expect(computeRatingMultiplier(1)).toBe(0.8);
+    expect(computeRatingMultiplier(2)).toBe(0.8);
+    expect(computeRatingMultiplier(1.5)).toBe(0.8);
+  });
+
+  it("returns 1.0 for average rating between 2 and 4 (exclusive)", () => {
+    expect(computeRatingMultiplier(3)).toBe(1.0);
+    expect(computeRatingMultiplier(2.5)).toBe(1.0);
+    expect(computeRatingMultiplier(3.9)).toBe(1.0);
+  });
+});
+
+// ─── computeFlavorScore with ratingMultiplier ───────────────────────────────
+
+describe("computeFlavorScore with ratingMultiplier", () => {
+  it("applies multiplier to flavour-based moods", () => {
+    const product = { bitterness: 5, sourness: 2, richness: 5 };
+    const baseScore = computeFlavorScore(product, defaultProfile, "strong-rich");
+    const boostedScore = computeFlavorScore(product, defaultProfile, "strong-rich", undefined, undefined, 1.2);
+    expect(boostedScore).toBeCloseTo(baseScore * 1.2);
+  });
+
+  it("applies penalty multiplier to flavour-based moods", () => {
+    const product = { bitterness: 5, sourness: 2, richness: 5 };
+    const baseScore = computeFlavorScore(product, defaultProfile, "strong-rich");
+    const penalizedScore = computeFlavorScore(product, defaultProfile, "strong-rich", undefined, undefined, 0.8);
+    expect(penalizedScore).toBeCloseTo(baseScore * 0.8);
+  });
+
+  it("ignores multiplier for surprise-me mood", () => {
+    const product = { bitterness: 3, sourness: 3, richness: 3 };
+    const baseScore = computeFlavorScore(product, defaultProfile, "surprise-me", "p1", []);
+    const withMultiplier = computeFlavorScore(product, defaultProfile, "surprise-me", "p1", [], 1.2);
+    expect(withMultiplier).toBe(baseScore);
+  });
+
+  it("defaults to 1.0 when multiplier is undefined", () => {
+    const product = { bitterness: 3, sourness: 3, richness: 3 };
+    const withoutMultiplier = computeFlavorScore(product, defaultProfile, "light-bright");
+    const withDefault = computeFlavorScore(product, defaultProfile, "light-bright", undefined, undefined, 1.0);
+    expect(withoutMultiplier).toBe(withDefault);
+  });
+});
+
+// ─── scoreAndRankBatches with productRatings ────────────────────────────────
+
+describe("scoreAndRankBatches with productRatings", () => {
+  it("boosts high-rated product above unrated equivalent with same flavour", () => {
+    const rated = makeBatch({
+      batchId: "rated",
+      productId: "p-rated",
+      product: { name: "Rated", brand: "B", type: "drip-bag", bitterness: 5, sourness: 2, richness: 5 },
+    });
+    const unrated = makeBatch({
+      batchId: "unrated",
+      productId: "p-unrated",
+      product: { name: "Unrated", brand: "B", type: "drip-bag", bitterness: 5, sourness: 2, richness: 5 },
+    });
+
+    const ratings: Record<string, number> = { "p-rated": 5.0 };
+    const result = scoreAndRankBatches(
+      [unrated, rated],
+      defaultProfile,
+      "strong-rich",
+      today,
+      [],
+      ratings
+    );
+    expect(result[0].batchId).toBe("rated");
+  });
+
+  it("penalizes low-rated product below unrated equivalent", () => {
+    const lowRated = makeBatch({
+      batchId: "low",
+      productId: "p-low",
+      product: { name: "Low", brand: "B", type: "drip-bag", bitterness: 5, sourness: 2, richness: 5 },
+    });
+    const unrated = makeBatch({
+      batchId: "unrated",
+      productId: "p-unrated",
+      product: { name: "Unrated", brand: "B", type: "drip-bag", bitterness: 5, sourness: 2, richness: 5 },
+    });
+
+    const ratings: Record<string, number> = { "p-low": 1.0 };
+    const result = scoreAndRankBatches(
+      [lowRated, unrated],
+      defaultProfile,
+      "strong-rich",
+      today,
+      [],
+      ratings
+    );
+    expect(result[0].batchId).toBe("unrated");
+  });
+
+  it("does not apply ratings in surprise-me mood", () => {
+    const rated = makeBatch({
+      batchId: "rated",
+      productId: "p-rated",
+    });
+    const unrated = makeBatch({
+      batchId: "unrated",
+      productId: "p-unrated",
+    });
+
+    const ratings: Record<string, number> = { "p-rated": 5.0 };
+    const withRatings = scoreAndRankBatches(
+      [rated, unrated],
+      defaultProfile,
+      "surprise-me",
+      today,
+      [],
+      ratings
+    );
+    const withoutRatings = scoreAndRankBatches(
+      [rated, unrated],
+      defaultProfile,
+      "surprise-me",
+      today,
+      []
+    );
+    // Scores should be identical — ratings have no effect on surprise-me
+    expect(withRatings[0].score).toBe(withoutRatings[0].score);
+    expect(withRatings[1].score).toBe(withoutRatings[1].score);
+  });
+
+  it("expiry urgency is unaffected by ratings", () => {
+    const expiring = makeBatch({
+      batchId: "expiring",
+      productId: "p-expiring",
+      bestBeforeDate: "2026-03-10", // 5 days from today — urgent (+100)
+      product: { name: "Expiring", brand: "B", type: "drip-bag", bitterness: 3, sourness: 3, richness: 3 },
+    });
+    const lowRatedFresh = makeBatch({
+      batchId: "fresh",
+      productId: "p-fresh",
+      bestBeforeDate: "2027-01-01", // ok (+0)
+      product: { name: "Fresh", brand: "B", type: "drip-bag", bitterness: 5, sourness: 2, richness: 5 },
+    });
+
+    // Even though p-expiring has a low rating, expiry urgency keeps it on top
+    const ratings: Record<string, number> = { "p-expiring": 1.0, "p-fresh": 5.0 };
+    const result = scoreAndRankBatches(
+      [lowRatedFresh, expiring],
+      defaultProfile,
+      "strong-rich",
+      today,
+      [],
+      ratings
+    );
+    expect(result[0].batchId).toBe("expiring");
   });
 });

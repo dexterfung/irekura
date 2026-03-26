@@ -16,8 +16,8 @@
 
 **Purpose**: Add i18n keys for all new UI strings upfront so every subsequent task can use them.
 
-- [ ] T001 [P] Add tasting notes and average rating i18n keys to `messages/en.json` (tastingNotes section: placeholder, charCount, label, save; averageRating section: label, outOf, noRatings)
-- [ ] T002 [P] Add tasting notes and average rating i18n keys to `messages/zh-HK.json` (Traditional Chinese HK equivalents for all keys added in T001)
+- [X] T001 [P] Add tasting notes and average rating i18n keys to `messages/en.json` (tastingNotes section: placeholder, charCount, label, save; averageRating section: label, outOf, noRatings)
+- [X] T002 [P] Add tasting notes and average rating i18n keys to `messages/zh-HK.json` (Traditional Chinese HK equivalents for all keys added in T001)
 
 ---
 
@@ -27,11 +27,11 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T003 Extend `convex/schema.ts` — add optional field `tastingNotes: v.optional(v.string())` to the `consumptionLogs` table definition
-- [ ] T004 Update `consumption.create` mutation in `convex/consumption.ts` — add optional `tastingNotes: v.optional(v.string())` arg with 280-character validation; persist alongside existing fields
-- [ ] T005 Update `consumption.rate` mutation in `convex/consumption.ts` — add optional `tastingNotes: v.optional(v.string())` arg with 280-character validation; when provided, patch `tastingNotes` alongside `rating`
-- [ ] T006 Add `ratingsForProducts` query to `convex/consumption.ts` — takes optional `forGuest: v.optional(v.boolean())`; returns `Record<string, number>` mapping productId to the average of the last 5 ratings for each product by the current user (filtered by `loggedFor` when forGuest is true); products with no ratings are omitted from the result
-- [ ] T007 [P] Add `averageRatings` query to `convex/consumption.ts` — takes optional `forGuest: v.optional(v.boolean())`; returns `Record<string, { average: number; count: number }>` mapping productId to the average rating and count across ALL rated consumption logs for the current user (or guest); products with no ratings are omitted
+- [X] T003 Extend `convex/schema.ts` — add optional field `tastingNotes: v.optional(v.string())` to the `consumptionLogs` table definition
+- [X] T004 Update `consumption.create` mutation in `convex/consumption.ts` — add optional `tastingNotes: v.optional(v.string())` arg with 280-character validation; persist alongside existing fields
+- [X] T005 Update `consumption.rate` mutation in `convex/consumption.ts` — add optional `tastingNotes: v.optional(v.string())` arg with 280-character validation; when provided, patch `tastingNotes` alongside `rating`
+- [X] T006 Add `ratingsForProducts` query to `convex/consumption.ts` — takes optional `forGuest: v.optional(v.boolean())`; returns `Record<string, number>` mapping productId to the average of the last 5 ratings for each product by the current user (filtered by `loggedFor` when forGuest is true); products with no ratings are omitted from the result
+- [X] T007 [P] Add `averageRatings` query to `convex/consumption.ts` — takes optional `forGuest: v.optional(v.boolean())`; returns `Record<string, { average: number; count: number }>` mapping productId to the average rating and count across ALL rated consumption logs for the current user (or guest); products with no ratings are omitted
 
 **Checkpoint**: Backend ready — all UI stories can now proceed.
 
@@ -43,9 +43,9 @@
 
 **Independent Test**: Log a coffee → rating prompt appears → rate 4 stars → check History page → entry shows 4 stars. Skip rating on next log → no rating shown.
 
-- [ ] T008 [US1] Update the post-drink rating dialog in `app/(protected)/recommend/page.tsx` — add an optional tasting notes text input (max 280 chars with character count indicator) below the existing star rating; pass `tastingNotes` to `api.consumption.rate` when saving
-- [ ] T009 [US1] Update the quick-log dialog in `app/(protected)/history/page.tsx` — add an optional tasting notes text input (max 280 chars with character count indicator) alongside the existing rating selector; pass `tastingNotes` to `api.consumption.create` when creating
-- [ ] T010 [US1] Update `components/calendar/DayDetail.tsx` — display `tastingNotes` below each consumption log entry; add a tap-to-edit interaction that opens a text input to add or update tasting notes via `api.consumption.rate`
+- [X] T008 [US1] Update the post-drink rating dialog in `app/(protected)/recommend/page.tsx` — add an optional tasting notes text input (max 280 chars with character count indicator) below the existing star rating; pass `tastingNotes` to `api.consumption.rate` when saving
+- [X] T009 [US1] Update the quick-log dialog in `app/(protected)/history/page.tsx` — add an optional tasting notes text input (max 280 chars with character count indicator) alongside the existing rating selector; pass `tastingNotes` to `api.consumption.create` when creating
+- [X] T010 [US1] Update `components/calendar/DayDetail.tsx` — display `tastingNotes` below each consumption log entry; add a tap-to-edit interaction that opens a text input to add or update tasting notes via `api.consumption.rate`
 
 **Checkpoint**: Rating and tasting notes capture flow complete end-to-end.
 
@@ -57,11 +57,11 @@
 
 **Independent Test**: Rate Product A 5 stars ×3, Product B 2 stars ×3 (similar flavour profiles). Request recommendation with matching mood → Product A recommended first.
 
-- [ ] T011 [US2] Add `computeRatingMultiplier` pure function to `lib/recommendations/engine.ts` — accepts `averageRating: number | undefined`, returns multiplier: `undefined` → 1.0, `>= 4` → 1.2, `<= 2` → 0.8, otherwise → 1.0
-- [ ] T012 [US2] Update `computeFlavorScore` in `lib/recommendations/engine.ts` — add optional `ratingMultiplier?: number` parameter; when mood is NOT `"surprise-me"`, multiply the computed flavour score by `(ratingMultiplier ?? 1.0)` before returning; when mood IS `"surprise-me"`, ignore the multiplier entirely
-- [ ] T013 [US2] Update `scoreAndRankBatches` in `lib/recommendations/engine.ts` — add optional `productRatings?: Record<string, number>` parameter; for each batch, look up `productRatings[batch.productId]`, compute multiplier via `computeRatingMultiplier()`, and pass it to `computeFlavorScore()`; update `ScoredBatch` type if needed
-- [ ] T014 [US2] Add unit tests for rating multiplier in `lib/recommendations/engine.test.ts` — test `computeRatingMultiplier` (undefined→1.0, 5→1.2, 1→0.8, 3→1.0); test `computeFlavorScore` with multiplier for non-surprise moods; test that surprise-me ignores multiplier; test `scoreAndRankBatches` with productRatings map boosts high-rated product above unrated equivalent
-- [ ] T015 [US2] Update `app/(protected)/recommend/page.tsx` — call `ratingsForProducts` query (with `forGuest` flag when guest is active); pass the resulting ratings map to `scoreAndRankBatches()`
+- [X] T011 [US2] Add `computeRatingMultiplier` pure function to `lib/recommendations/engine.ts` — accepts `averageRating: number | undefined`, returns multiplier: `undefined` → 1.0, `>= 4` → 1.2, `<= 2` → 0.8, otherwise → 1.0
+- [X] T012 [US2] Update `computeFlavorScore` in `lib/recommendations/engine.ts` — add optional `ratingMultiplier?: number` parameter; when mood is NOT `"surprise-me"`, multiply the computed flavour score by `(ratingMultiplier ?? 1.0)` before returning; when mood IS `"surprise-me"`, ignore the multiplier entirely
+- [X] T013 [US2] Update `scoreAndRankBatches` in `lib/recommendations/engine.ts` — add optional `productRatings?: Record<string, number>` parameter; for each batch, look up `productRatings[batch.productId]`, compute multiplier via `computeRatingMultiplier()`, and pass it to `computeFlavorScore()`; update `ScoredBatch` type if needed
+- [X] T014 [US2] Add unit tests for rating multiplier in `lib/recommendations/engine.test.ts` — test `computeRatingMultiplier` (undefined→1.0, 5→1.2, 1→0.8, 3→1.0); test `computeFlavorScore` with multiplier for non-surprise moods; test that surprise-me ignores multiplier; test `scoreAndRankBatches` with productRatings map boosts high-rated product above unrated equivalent
+- [X] T015 [US2] Update `app/(protected)/recommend/page.tsx` — call `ratingsForProducts` query (with `forGuest` flag when guest is active); pass the resulting ratings map to `scoreAndRankBatches()`
 
 **Checkpoint**: Recommendations now reflect user's rating history. Existing 19 tests + new tests all pass.
 
@@ -75,7 +75,7 @@
 
 Note: The tasting notes backend (T003–T005) and UI integration (T008–T010) were already implemented in Phases 2–3. This phase handles any remaining tasting-notes-specific polish.
 
-- [ ] T016 [US3] Update `convex/consumption.ts` `listByMonth` query — ensure the returned log objects include the `tastingNotes` field alongside existing fields (verify the field is surfaced to the frontend)
+- [X] T016 [US3] Update `convex/consumption.ts` `listByMonth` query — ensure the returned log objects include the `tastingNotes` field alongside existing fields (verify the field is surfaced to the frontend)
 
 **Checkpoint**: Tasting notes fully visible and editable in History.
 
@@ -87,8 +87,8 @@ Note: The tasting notes backend (T003–T005) and UI integration (T008–T010) w
 
 **Independent Test**: Rate a product 3, 4, 5 stars on 3 occasions → view product in Inventory → average rating of 4.0 displayed. Unrated product shows no rating.
 
-- [ ] T017 [US4] Update `app/(protected)/inventory/page.tsx` — call `averageRatings` query (with `forGuest` flag when guest is active); pass the average rating data to product card components
-- [ ] T018 [US4] Update the product card component (identify the correct component in `components/inventory/` or inline in the inventory page) — display average rating as stars (e.g. "★★★★☆ 4.0") next to the product name/details; show nothing for unrated products (FR-011); when guest profile is enabled, show the selected person's average only
+- [X] T017 [US4] Update `app/(protected)/inventory/page.tsx` — call `averageRatings` query (with `forGuest` flag when guest is active); pass the average rating data to product card components
+- [X] T018 [US4] Update the product card component (identify the correct component in `components/inventory/` or inline in the inventory page) — display average rating as stars (e.g. "★★★★☆ 4.0") next to the product name/details; show nothing for unrated products (FR-011); when guest profile is enabled, show the selected person's average only
 
 **Checkpoint**: All user stories complete. Products show average ratings in Inventory.
 
@@ -98,10 +98,10 @@ Note: The tasting notes backend (T003–T005) and UI integration (T008–T010) w
 
 **Purpose**: Final validation and cleanup.
 
-- [ ] T019 Run `npm test` — verify all existing tests (19) + new rating multiplier tests pass
-- [ ] T020 Run `npx tsc --noEmit` — verify no TypeScript errors
-- [ ] T021 Run `npm run lint` — verify no lint errors
-- [ ] T022 Run quickstart.md verification checklist — manually validate all 11 items
+- [X] T019 Run `npm test` — verify all existing tests (19) + new rating multiplier tests pass
+- [X] T020 Run `npx tsc --noEmit` — verify no TypeScript errors
+- [X] T021 Run `npm run lint` — verify no lint errors
+- [X] T022 Run quickstart.md verification checklist — manually validate all 11 items
 
 ---
 

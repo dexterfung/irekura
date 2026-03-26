@@ -32,6 +32,7 @@ export default function InventoryPage() {
 
   const products = useQuery(api.products.list);
   const allBatches = useQuery(api.batches.listActive);
+  const avgRatings = useQuery(api.consumption.averageRatings, {});
 
   if (products === undefined || allBatches === undefined) {
     return (
@@ -144,6 +145,7 @@ export default function InventoryPage() {
               product={product}
               batches={batchesByProduct[product._id] ?? []}
               href={`/inventory/${product._id}`}
+              averageRating={avgRatings?.[product._id as string]}
             />
           ))}
         </div>

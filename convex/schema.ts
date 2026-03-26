@@ -34,6 +34,7 @@ export default defineSchema({
     batchId: v.id("batches"),
     date: v.string(),
     rating: v.optional(v.number()),
+    tastingNotes: v.optional(v.string()),
     loggedFor: v.optional(v.union(v.literal("self"), v.literal("guest"))),
   })
     .index("by_user_date", ["userId", "date"])

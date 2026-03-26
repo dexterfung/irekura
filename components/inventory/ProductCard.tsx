@@ -11,11 +11,13 @@ interface ProductCardProps {
   product: Doc<"products">;
   batches: Doc<"batches">[];
   href: string;
+  averageRating?: { average: number; count: number };
 }
 
-export default function ProductCard({ product, batches, href }: ProductCardProps) {
+export default function ProductCard({ product, batches, href, averageRating }: ProductCardProps) {
   const t = useTranslations("inventory");
   const tTypes = useTranslations("productTypes");
+  const tRating = useTranslations("averageRating");
 
   const today = toISODateString(new Date());
   const activeBatches = batches.filter((b) => b.brewsRemaining > 0);
@@ -71,6 +73,19 @@ export default function ProductCard({ product, batches, href }: ProductCardProps
             {t("earliestBestBefore", { date: earliestExpiry })}
           </div>
         )}
+        <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
+          {averageRating ? (
+            <>
+              <span style={{ color: "#facc15" }}>★</span>
+              <span>{tRating("outOf", { rating: averageRating.average.toFixed(1) })}</span>
+            </>
+          ) : (
+            <>
+              <span>★</span>
+              <span>{tRating("noRatings")}</span>
+            </>
+          )}
+        </div>
       </CardContent>
     </Card>
     </Link>

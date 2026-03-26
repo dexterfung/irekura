@@ -61,6 +61,7 @@ export const create = mutation({
     batchId: v.id("batches"),
     date: v.string(),
     rating: v.optional(v.number()),
+    tastingNotes: v.optional(v.string()),
     loggedFor: v.optional(v.union(v.literal("self"), v.literal("guest"))),
   },
   handler: async (ctx, args) => {
@@ -90,6 +91,10 @@ export const create = mutation({
       throw new ConvexError("INVALID_RATING");
     }
 
+    if (args.tastingNotes !== undefined && args.tastingNotes.length > 280) {
+      throw new ConvexError("TASTING_NOTES_TOO_LONG");
+    }
+
     // Atomically create log and decrement brews
     const logId = await ctx.db.insert("consumptionLogs", {
       userId: identity.subject,
@@ -97,6 +102,7 @@ export const create = mutation({
       batchId: args.batchId,
       date: args.date,
       rating: args.rating,
+      tastingNotes: args.tastingNotes,
       loggedFor: args.loggedFor ?? "self",
     });
 
@@ -125,10 +131,87 @@ export const listRecentForGuest = query({
   },
 });
 
+export const ratingsForProducts = query({
+  args: {
+    forGuest: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new ConvexError("Unauthenticated");
+
+    const logs = await ctx.db
+      .query("consumptionLogs")
+      .withIndex("by_user", (q) => q.eq("userId", identity.subject))
+      .order("desc")
+      .collect();
+
+    const filtered = args.forGuest
+      ? logs.filter((l) => l.loggedFor === "guest" && l.rating !== undefined)
+      : logs.filter((l) => l.loggedFor !== "guest" && l.rating !== undefined);
+
+    // Group by productId, take last 5 ratings per product
+    const byProduct: Record<string, number[]> = {};
+    for (const log of filtered) {
+      const pid = log.productId as string;
+      if (!byProduct[pid]) byProduct[pid] = [];
+      if (byProduct[pid].length < 5) {
+        byProduct[pid].push(log.rating as number);
+      }
+    }
+
+    // Compute average of last 5 ratings per product
+    const result: Record<string, number> = {};
+    for (const [pid, ratings] of Object.entries(byProduct)) {
+      result[pid] = ratings.reduce((sum, r) => sum + r, 0) / ratings.length;
+    }
+
+    return result;
+  },
+});
+
+export const averageRatings = query({
+  args: {
+    forGuest: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new ConvexError("Unauthenticated");
+
+    const logs = await ctx.db
+      .query("consumptionLogs")
+      .withIndex("by_user", (q) => q.eq("userId", identity.subject))
+      .collect();
+
+    const filtered = args.forGuest
+      ? logs.filter((l) => l.loggedFor === "guest" && l.rating !== undefined)
+      : logs.filter((l) => l.loggedFor !== "guest" && l.rating !== undefined);
+
+    // Group all ratings by productId
+    const byProduct: Record<string, number[]> = {};
+    for (const log of filtered) {
+      const pid = log.productId as string;
+      if (!byProduct[pid]) byProduct[pid] = [];
+      byProduct[pid].push(log.rating as number);
+    }
+
+    // Compute average and count per product
+    const result: Record<string, { average: number; count: number }> = {};
+    for (const [pid, ratings] of Object.entries(byProduct)) {
+      result[pid] = {
+        average: ratings.reduce((sum, r) => sum + r, 0) / ratings.length,
+        count: ratings.length,
+      };
+    }
+
+    return result;
+  },
+});
+
 export const rate = mutation({
   args: {
     id: v.id("consumptionLogs"),
-    rating: v.number(),
+    rating: v.optional(v.number()),
+    tastingNotes: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -139,10 +222,22 @@ export const rate = mutation({
       throw new ConvexError("NOT_FOUND");
     }
 
-    if (args.rating < 1 || args.rating > 5) {
+    if (args.rating !== undefined && (args.rating < 1 || args.rating > 5)) {
       throw new ConvexError("INVALID_RATING");
     }
 
-    await ctx.db.patch(args.id, { rating: args.rating });
+    if (args.tastingNotes !== undefined && args.tastingNotes.length > 280) {
+      throw new ConvexError("TASTING_NOTES_TOO_LONG");
+    }
+
+    const patch: { rating?: number; tastingNotes?: string } = {};
+    if (args.rating !== undefined) {
+      patch.rating = args.rating;
+    }
+    if (args.tastingNotes !== undefined) {
+      patch.tastingNotes = args.tastingNotes;
+    }
+
+    await ctx.db.patch(args.id, patch);
   },
 });

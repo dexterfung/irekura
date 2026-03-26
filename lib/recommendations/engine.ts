@@ -49,12 +49,22 @@ export function computeExpiryScore(
   return { score: 0, urgency: "ok" };
 }
 
+export function computeRatingMultiplier(
+  averageRating: number | undefined
+): number {
+  if (averageRating === undefined) return 1.0;
+  if (averageRating >= 4) return 1.2;
+  if (averageRating <= 2) return 0.8;
+  return 1.0;
+}
+
 export function computeFlavorScore(
   product: FlavorProfile & { bitterness: number; sourness: number; richness: number },
   profile: FlavorProfile,
   mood: Mood,
   productId?: string,
-  recentProductIds?: string[]
+  recentProductIds?: string[],
+  ratingMultiplier?: number
 ): number {
   let score: number;
 
@@ -90,7 +100,14 @@ export function computeFlavorScore(
     }
   }
 
-  return Math.max(0, score);
+  score = Math.max(0, score);
+
+  // Apply rating multiplier only for flavour-based moods (not surprise-me)
+  if (mood !== "surprise-me") {
+    score *= ratingMultiplier ?? 1.0;
+  }
+
+  return score;
 }
 
 export function scoreAndRankBatches(
@@ -98,7 +115,8 @@ export function scoreAndRankBatches(
   profile: FlavorProfile,
   mood: Mood,
   todayISO: string,
-  recentProductIds: string[]
+  recentProductIds: string[],
+  productRatings?: Record<string, number>
 ): ScoredBatch[] {
   const eligible = batches.filter((b) => b.brewsRemaining > 0);
 
@@ -107,12 +125,16 @@ export function scoreAndRankBatches(
       batch.bestBeforeDate,
       todayISO
     );
+    const ratingMultiplier = productRatings
+      ? computeRatingMultiplier(productRatings[batch.productId])
+      : undefined;
     const flavorScore = computeFlavorScore(
       batch.product,
       profile,
       mood,
       batch.productId,
-      recentProductIds
+      recentProductIds,
+      ratingMultiplier
     );
     return {
       ...batch,

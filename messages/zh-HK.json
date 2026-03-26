@@ -157,7 +157,16 @@
     "smoothBalanced": "順滑均衡",
     "smoothBalancedDesc": "平衡圓潤",
     "surpriseMe": "畀個驚喜我",
-    "surpriseMeDesc": "來點不一樣的"
+    "surpriseMeDesc": "來點不一樣的",
+    "howItWorks": "推薦原理",
+    "howItWorksExpiryTitle": "即將到期優先",
+    "howItWorksExpiryDesc": "接近最佳賞味期的咖啡會被優先推薦，避免浪費。",
+    "howItWorksFlavourTitle": "配合你的口味",
+    "howItWorksFlavourDesc": "你的風味偏好和所選心情決定哪些咖啡獲得最高分。",
+    "howItWorksRatingTitle": "評分微調推薦",
+    "howItWorksRatingDesc": "持續評 4 星或以上的產品會獲得加分。評 2 星或以下的則會降低排名。未評分的產品不受影響。",
+    "howItWorksSurpriseTitle": "「畀個驚喜我」有所不同",
+    "howItWorksSurpriseDesc": "此心情會忽略評分和偏好——它會推薦你最近沒飲過的咖啡。"
   },
   "history": {
     "pageTitle": "歷史",
@@ -192,6 +201,17 @@
   },
   "starRating": {
     "star": "{count} 星"
+  },
+  "tastingNotes": {
+    "label": "品嚐筆記",
+    "placeholder": "例：順滑，帶有朱古力餘韻…",
+    "charCount": "{count}/280",
+    "save": "儲存筆記"
+  },
+  "averageRating": {
+    "label": "平均評分",
+    "outOf": "{rating} / 5.0",
+    "noRatings": "未有評分"
   },
   "guestProfile": {
     "sectionTitle": "訪客設定",

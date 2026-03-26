@@ -39,8 +39,10 @@ export default function HistoryPage() {
   const [logBatchId, setLogBatchId] = useState("");
   const [logDate, setLogDate] = useState(toISODateString(now));
   const [logRating, setLogRating] = useState<string>("");
+  const [logTastingNotes, setLogTastingNotes] = useState("");
   const [loggedFor, setLoggedFor] = useState<"self" | "guest">("self");
   const [isLogging, setIsLogging] = useState(false);
+  const tNotes = useTranslations("tastingNotes");
 
   const guestSettings = useQuery(api.settings.getGuestSettings);
   const monthLogs = useQuery(api.consumption.listByMonth, { year, month });
@@ -76,12 +78,14 @@ export default function HistoryPage() {
         batchId: logBatchId as Id<"batches">,
         date: logDate,
         rating: logRating ? parseInt(logRating, 10) : undefined,
+        tastingNotes: logTastingNotes.trim() || undefined,
         loggedFor,
       });
       setLogDialogOpen(false);
       setLogProductId("");
       setLogBatchId("");
       setLogRating("");
+      setLogTastingNotes("");
       setLoggedFor("self");
     } finally {
       setIsLogging(false);
@@ -248,6 +252,21 @@ export default function HistoryPage() {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="space-y-1">
+              <Label>{tNotes("label")}</Label>
+              <textarea
+                value={logTastingNotes}
+                onChange={(e) => setLogTastingNotes(e.target.value.slice(0, 280))}
+                placeholder={tNotes("placeholder")}
+                maxLength={280}
+                rows={2}
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+              <p className="text-xs text-muted-foreground text-right">
+                {tNotes("charCount", { count: logTastingNotes.length })}
+              </p>
             </div>
 
             <DialogFooter>
