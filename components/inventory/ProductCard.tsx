@@ -68,11 +68,9 @@ export default function ProductCard({ product, batches, href, averageRating }: P
             )}
           </div>
         </div>
-        {earliestExpiry && (
-          <div className="text-xs text-muted-foreground mt-1">
-            {t("earliestBestBefore", { date: earliestExpiry })}
-          </div>
-        )}
+        <div className="text-xs text-muted-foreground mt-1">
+          {earliestExpiry ? t("earliestBestBefore", { date: earliestExpiry }) : t("depleted")}
+        </div>
         <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
           {averageRating ? (
             <>
