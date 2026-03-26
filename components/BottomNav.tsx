@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Package, Coffee, Calendar, Settings } from "lucide-react";
+import { Package, Coffee, Calendar, Settings, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 
@@ -14,6 +14,7 @@ export default function BottomNav() {
     { href: "/inventory", label: t("inventory"), icon: Package },
     { href: "/recommend", label: t("recommend"), icon: Coffee },
     { href: "/history", label: t("history"), icon: Calendar },
+    { href: "/insights", label: t("insights"), icon: BarChart3 },
     { href: "/preferences", label: t("preferences"), icon: Settings },
   ];
 

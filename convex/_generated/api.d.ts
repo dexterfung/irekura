@@ -11,6 +11,7 @@
 import type * as batches from "../batches.js";
 import type * as consumption from "../consumption.js";
 import type * as http from "../http.js";
+import type * as insights from "../insights.js";
 import type * as preferences from "../preferences.js";
 import type * as products from "../products.js";
 import type * as settings from "../settings.js";
@@ -25,6 +26,7 @@ declare const fullApi: ApiFromModules<{
   batches: typeof batches;
   consumption: typeof consumption;
   http: typeof http;
+  insights: typeof insights;
   preferences: typeof preferences;
   products: typeof products;
   settings: typeof settings;

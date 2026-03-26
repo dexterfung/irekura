@@ -3,7 +3,6 @@ import { auth } from "@/lib/auth";
 import BottomNav from "@/components/BottomNav";
 import DesktopSideNav from "@/components/DesktopSideNav";
 import PageHeader from "@/components/PageHeader";
-import PageTitle from "@/components/PageTitle";
 
 export default async function ProtectedLayout({
   children,
@@ -32,10 +31,9 @@ export default async function ProtectedLayout({
         </div>
 
         <main className="flex-1 pt-16 lg:pt-0 lg:pb-0" style={{ paddingBottom: "calc(5rem + env(safe-area-inset-bottom))" }}>
-          <div className="px-4 pt-4 pb-2">
-            <PageTitle />
+          <div className="pt-4">
+            {children}
           </div>
-          {children}
         </main>
 
         <BottomNav />

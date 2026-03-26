@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Package, Coffee, Calendar, Settings, LogOut, Sun, Moon, Monitor } from "lucide-react";
+import { Package, Coffee, Calendar, Settings, BarChart3, LogOut, Sun, Moon, Monitor } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
 import { useMutation } from "convex/react";
@@ -35,6 +35,7 @@ export default function DesktopSideNav() {
     { href: "/inventory", label: t("inventory"), icon: Package },
     { href: "/recommend", label: t("recommend"), icon: Coffee },
     { href: "/history", label: t("history"), icon: Calendar },
+    { href: "/insights", label: t("insights"), icon: BarChart3 },
     { href: "/preferences", label: t("preferences"), icon: Settings },
   ];
 

@@ -3,10 +3,11 @@
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 
-const PAGE_PREFIXES: { prefix: string; key: "inventory" | "recommend" | "history" | "preferences" }[] = [
+const PAGE_PREFIXES: { prefix: string; key: "inventory" | "recommend" | "history" | "insights" | "preferences" }[] = [
   { prefix: "/inventory", key: "inventory" },
   { prefix: "/recommend", key: "recommend" },
   { prefix: "/history", key: "history" },
+  { prefix: "/insights", key: "insights" },
   { prefix: "/preferences", key: "preferences" },
 ];
 
