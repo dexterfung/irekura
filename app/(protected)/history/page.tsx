@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { startOfWeek, addDays, parseISO } from "date-fns";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
@@ -44,8 +45,19 @@ export default function HistoryPage() {
   const [isLogging, setIsLogging] = useState(false);
   const tNotes = useTranslations("tastingNotes");
 
+  // For mobile weekly strip: determine if the displayed week spans two months
+  const weekStart = startOfWeek(parseISO(weekRef));
+  const weekEnd = addDays(weekStart, 6);
+  const extraYear = weekEnd.getFullYear();
+  const extraMonth = weekEnd.getMonth() + 1;
+  const needsExtraMonth = extraMonth !== month || extraYear !== year;
+
   const guestSettings = useQuery(api.settings.getGuestSettings);
   const monthLogs = useQuery(api.consumption.listByMonth, { year, month });
+  const extraMonthLogs = useQuery(
+    api.consumption.listByMonth,
+    needsExtraMonth ? { year: extraYear, month: extraMonth } : "skip"
+  );
   const products = useQuery(api.products.list);
   const batches = useQuery(api.batches.listByProduct, logProductId ? { productId: logProductId as Id<"products"> } : "skip");
   const createLog = useMutation(api.consumption.create);
@@ -53,13 +65,18 @@ export default function HistoryPage() {
   const guestEnabled = guestSettings?.guestEnabled ?? false;
   const guestDisplayName = guestSettings?.guestDisplayName ?? tGuest("defaultName");
 
+  const allLogs = [
+    ...(monthLogs ?? []),
+    ...(extraMonthLogs ?? []),
+  ];
+
   const datesWithEntries = new Set<string>(
-    monthLogs?.map(({ log }: { log: { date: string } }) => log.date) ?? []
+    allLogs.map(({ log }: { log: { date: string } }) => log.date)
   );
 
   const allSelectedEntries =
-    selectedDate && monthLogs
-      ? monthLogs.filter(({ log }: { log: { date: string } }) => log.date === selectedDate)
+    selectedDate && (monthLogs || extraMonthLogs)
+      ? allLogs.filter(({ log }: { log: { date: string } }) => log.date === selectedDate)
       : [];
 
   const selectedDateEntries = allSelectedEntries.filter(({ log }: { log: { loggedFor?: string } }) => {
@@ -125,7 +142,12 @@ export default function HistoryPage() {
             datesWithEntries={datesWithEntries}
             selectedDate={selectedDate}
             onSelectDate={setSelectedDate}
-            onNavigate={setWeekRef}
+            onNavigate={(newRef) => {
+              setWeekRef(newRef);
+              const ws = startOfWeek(parseISO(newRef));
+              setYear(ws.getFullYear());
+              setMonth(ws.getMonth() + 1);
+            }}
           />
         </div>
         <div className="hidden sm:block">
